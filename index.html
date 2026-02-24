@@ -1,1015 +1,1308 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Islamic Dua Collection</title>
+<title>Dua Collection</title>
+
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f7f7f7;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        color: #2c3e50;
-    }
-    .dua-card {
-        background-color: white;
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dua-name {
-        font-size: 20px;
-        color: #2980b9;
-        font-weight: bold;
-    }
-    .arabic {
-        font-size: 22px;
-        direction: rtl;
-        text-align: right;
-        margin-top: 10px;
-    }
-    .roman {
-        color: #34495e;
-        margin-top: 5px;
-    }
-    .urdu {
-        color: #27ae60;
-        margin-top: 5px;
-    }
-    hr {
-        border: 0;
-        border-top: 1px solid #e0e0e0;
-        margin: 20px 0;
-    }
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#e8f5e9,#ffffff);
+    text-align:center;
+}
+
+header{
+    padding:20px;
+}
+
+h1{
+    color:#1b5e20;
+}
+
+input,select{
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    width:250px;
+    margin:5px;
+}
+
+#duaContainer{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+    padding:20px;
+}
+
+.duaCard{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    transition:0.3s;
+}
+
+.duaCard:hover{
+    transform:scale(1.03);
+}
+
+.title{
+    font-weight:bold;
+    color:#2e7d32;
+    margin-bottom:10px;
+}
+
+.arabic{
+    font-size:22px;
+    direction:rtl;
+    color:#0d47a1;
+}
+
+.urdu{
+    margin-top:10px;
+    color:#333;
+}
+
+button{
+    margin-top:10px;
+    padding:8px 12px;
+    border:none;
+    border-radius:6px;
+    background:#2e7d32;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#1b5e20;
+}
+
+.counter{
+    display:block;
+    margin-top:5px;
+    font-weight:bold;
+}
 </style>
 </head>
+
 <body>
 
-<h1>Islamic Dua Collection (300 Unique Duas)</h1>
+<header>
+<h1>📖 Dua Collection</h1>
+<input type="text" id="search" placeholder="Search dua...">
+<select id="category">
+<option value="all">All</option>
+<option value="morning">Morning</option>
+<option value="evening">Evening</option>
+<option value="general">General</option>
+<option value="protection">Protection</option>
+<option value="travel">Travel</option>
+</select>
+</header>
 
 <div id="duaContainer"></div>
 
 <script>
-let duas = [
-    { name: "Dua For Knowledge", arabic: "رَبِّ زِدْنِي عِلْمًا", roman: "Rabbi zidni ilma", urdu: "Ai Rab! Mere ilm mein izafa farma." },
-    { name: "Dua For Protection", arabic: "اللّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الشَّيْطَانِ الرَّجِيمِ", roman: "Allahumma inni a'udhu bika minash shaitanir rajeem", urdu: "Ai Allah! Main shaitan mardood se teri panah chahta hoon." },
-    { name: "Dua For Patience", arabic: "رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا", roman: "Rabbana afrigh alayna sabran", urdu: "Ai Rab! Hume sabr de." },
-    { name: "Dua For Forgiveness", arabic: "رَبِّ اغْفِرْ لِي", roman: "Rabbi ghfir li", urdu: "Ai mere Rab! Mujhe bakhsh de." },
-    { name: "Dua For Prosperity", arabic: "اللّهُمَّ بَارِكْ لِي فِي رِزْقِي", roman: "Allahumma barik li fi rizqi", urdu: "Ai Allah! Mere rizq mein barkat de." },
-    { name: "Dua For Safe Journey", arabic: "اللّهُمَّ سَفَرًا مَرْحَبًا", roman: "Allahumma safaran marhaban", urdu: "Ai Allah! Mere safar ko asaan aur safar se bharpur kar de." },
-    { name: "Dua For Healing", arabic: "اللّهُمَّ اشْفِ مَرْضَانَا", roman: "Allahumma ishfi mardana", urdu: "Ai Allah! Hamare mareezon ko shifa de." },
-    { name: "Dua For Clean Heart", arabic: "اللّهُمَّ طَهِّرْ قَلْبِي", roman: "Allahumma tahhir qalbi", urdu: "Ai Allah! Mere dil ko paak kar de." },
-    { name: "Dua For Family", arabic: "اللّهُمَّ اجْعَلْ أُسَرَنَا مُتَّحِدَةً", roman: "Allahumma aj’al usarana muttahidatan", urdu: "Ai Allah! Mere khandan ko ekjut kar." },
-    { name: "Dua For Good Deeds", arabic: "رَبِّ اجْعَلْنِي مِنَ الصَّالِحِينَ", roman: "Rabbi ajilni minas saliheen", urdu: "Ai Rab! Mujhe nek logon mein shamil kar." },
-    // 290 more unique duas with different names, translations, and Arabic text
+
+const duas = [
+
+{title:"Dua for Increase in Knowledge",arabic:"رَبِّ زِدْنِي عِلْمًا",urdu:"اے میرے رب! میرے علم میں اضافہ فرما۔",category:"morning"},
+{title:"Dua for Goodness",arabic:"اللّهُمَّ إِنِّي أَسْأَلُكَ الْخَيْرَ",urdu:"اے اللہ! میں تجھ سے بھلائی مانگتا ہوں۔",category:"morning"},
+{title:"Dua for Forgiveness",arabic:"أَسْتَغْفِرُ اللّٰهَ",urdu:"میں اللہ سے بخشش مانگتا ہوں۔",category:"evening"},
+{title:"Dua for Paradise",arabic:"اللّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ",urdu:"اے اللہ! میں تجھ سے جنت کا سوال کرتا ہوں۔",category:"general"},
+{title:"Dua Protection from Hell",arabic:"اللّهُمَّ أَجِرْنِي مِنَ النَّارِ",urdu:"اے اللہ! مجھے جہنم سے بچا لے۔",category:"general"},
+{title:"Dua for Parents",arabic:"رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ",urdu:"اے میرے رب! مجھے اور میرے والدین کو بخش دے۔",category:"general"},
+{title:"Dua for Guidance",arabic:"اللّهُمَّ اهْدِنِي فِيمَنْ هَدَيْتَ",urdu:"اے اللہ! مجھے ہدایت دے۔",category:"general"},
+{title:"Dua During Worry",arabic:"اللّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ",urdu:"اے اللہ! میں غم اور پریشانی سے تیری پناہ مانگتا ہوں۔",category:"protection"},
+{title:"Dua for Protection",arabic:"أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّةِ",urdu:"میں اللہ کے کامل کلمات کی پناہ لیتا ہوں۔",category:"protection"},
+{title:"Tasbeeh Subhanallah",arabic:"سُبْحَانَ اللّٰهِ",urdu:"اللہ پاک ہے۔",category:"general"},
+
+{title:"Dua for Firm Faith",arabic:"اللّهُمَّ يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ",urdu:"اے دلوں کو پھیرنے والے! میرے دل کو دین پر ثابت رکھ۔",category:"evening"},
+{title:"Dua for Rizq",arabic:"اللّهُمَّ اكْفِنِي بِحَلَالِكَ عَنْ حَرَامِكَ",urdu:"اے اللہ! مجھے اپنے حلال سے حرام سے بچا لے۔",category:"general"},
+{title:"Dua for Ease",arabic:"رَبِّ اشْرَحْ لِي صَدْرِي",urdu:"اے میرے رب! میرا سینہ کھول دے۔",category:"morning"},
+{title:"Dua for Protection from Evil",arabic:"اللّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ شَرِّ مَا خَلَقْتَ",urdu:"اے اللہ! ہر برائی سے بچا۔",category:"protection"},
+{title:"Dua After Wudu",arabic:"اللّهُمَّ اجْعَلْنِي مِنَ التَّوَّابِينَ",urdu:"اے اللہ! مجھے توبہ کرنے والوں میں شامل کر۔",category:"general"},
+{title:"Dua for Patience",arabic:"رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا",urdu:"اے ہمارے رب! ہم پر صبر نازل فرما۔",category:"general"},
+{title:"Dua for Light",arabic:"اللّهُمَّ اجْعَلْ فِي قَلْبِي نُورًا",urdu:"اے اللہ! میرے دل میں نور پیدا کر۔",category:"morning"},
+{title:"Dua When Traveling",arabic:"سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا",urdu:"پاک ہے وہ جس نے اسے ہمارے لیے مسخر کیا۔",category:"travel"},
+{title:"Dua for Success",arabic:"رَبِّ لَا تَذَرْنِي فَرْدًا",urdu:"اے رب! مجھے اکیلا نہ چھوڑ۔",category:"general"},
+{title:"Dua for Forgiving Sins",arabic:"اللّهُمَّ اغْفِرْ لِي ذُنُوبِي كُلَّهَا",urdu:"اے اللہ! میرے تمام گناہوں کو بخش دے۔",category:"evening"}
+
 ];
 
-for (let i = 10; i <= 300; i++) {
-    duas.push({
-        name: "Dua for " + i,
-        arabic: "اللّٰهُمَّ إِنِّي أَسْأَلُكَ",
-        roman: "Allahumma inni as’aluka",
-        urdu: "Ai Allah! Main tujh se maangta hoon."
+function displayDuas(list){
+    const container=document.getElementById("duaContainer");
+    container.innerHTML="";
+    list.forEach((dua)=>{
+        container.innerHTML+=`
+        <div class="duaCard">
+            <div class="title">${dua.title}</div>
+            <div class="arabic">${dua.arabic}</div>
+            <div class="urdu">${dua.urdu}</div>
+            <button onclick="tasbeeh(this)">Tasbeeh</button>
+            <span class="counter">0</span>
+        </div>`;
     });
 }
 
-let container = document.getElementById("duaContainer");
+function tasbeeh(btn){
+    let counter=btn.nextElementSibling;
+    counter.innerText=parseInt(counter.innerText)+1;
+}
 
-duas.forEach(dua => {
-    container.innerHTML += `
-        <div class="dua-card">
-            <div class="dua-name">${dua.name}</div>
-            <div class="arabic">${dua.arabic}</div>
-            <div class="roman">${dua.roman}</div>
-            <div class="urdu">${dua.urdu}</div>
-        </div>
-        <hr>
-    `;
+document.getElementById("search").addEventListener("input",function(){
+    let value=this.value.toLowerCase();
+    let filtered=duas.filter(d=>
+        d.title.toLowerCase().includes(value) ||
+        d.arabic.includes(value) ||
+        d.urdu.includes(value)
+    );
+    displayDuas(filtered);
 });
+
+document.getElementById("category").addEventListener("change",function(){
+    let cat=this.value;
+    if(cat==="all"){
+        displayDuas(duas);
+    }else{
+        displayDuas(duas.filter(d=>d.category===cat));
+    }
+});
+
+displayDuas(duas);
+
 </script>
 
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Islamic Dua Collection</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f7f7f7;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        color: #2c3e50;
-    }
-    .dua-card {
-        background-color: white;
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dua-name {
-        font-size: 20px;
-        color: #2980b9;
-        font-weight: bold;
-    }
-    .arabic {
-        font-size: 22px;
-        direction: rtl;
-        text-align: right;
-        margin-top: 10px;
-    }
-    .roman {
-        color: #34495e;
-        margin-top: 5px;
-    }
-    .urdu {
-        color: #27ae60;
-        margin-top: 5px;
-    }
-    hr {
-        border: 0;
-        border-top: 1px solid #e0e0e0;
-        margin: 20px 0;
-    }
-</style>
-</head>
-<body>
+<div class="dua-box">
+<div class="dua-title">21. Dua for Protection from Anxiety</div>
+<div class="arabic">اللّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ</div>
+<div class="urdu">اے اللہ! میں تیری پناہ مانگتا ہوں غم اور پریشانی سے۔</div>
+</div>
 
-<h1>Islamic Dua Collection (1–20)</h1>
+<div class="dua-box">
+<div class="dua-title">22. Dua for Barakah</div>
+<div class="arabic">اللّهُمَّ بَارِكْ لَنَا</div>
+<div class="urdu">اے اللہ! ہمارے لیے برکت عطا فرما۔</div>
+</div>
 
-<div id="duaContainer"></div>
+<div class="dua-box">
+<div class="dua-title">23. Dua for Good End</div>
+<div class="arabic">اللّهُمَّ اخْتِمْ لَنَا بِالْخَيْرِ</div>
+<div class="urdu">اے اللہ! ہمارا انجام بھلائی پر فرما۔</div>
+</div>
 
-<script>
-let duas = [
-    { name: "Dua For Knowledge", arabic: "رَبِّ زِدْنِي عِلْمًا", roman: "Rabbi zidni ilma", urdu: "Ai Rab! Mere ilm mein izafa farma." },
-    { name: "Dua For Protection", arabic: "اللّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الشَّيْطَانِ الرَّجِيمِ", roman: "Allahumma inni a'udhu bika minash shaitanir rajeem", urdu: "Ai Allah! Main shaitan mardood se teri panah chahta hoon." },
-    { name: "Dua For Patience", arabic: "رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا", roman: "Rabbana afrigh alayna sabran", urdu: "Ai Rab! Hume sabr de." },
-    { name: "Dua For Forgiveness", arabic: "رَبِّ اغْفِرْ لِي", roman: "Rabbi ghfir li", urdu: "Ai mere Rab! Mujhe bakhsh de." },
-    { name: "Dua For Prosperity", arabic: "اللّهُمَّ بَارِكْ لِي فِي رِزْقِي", roman: "Allahumma barik li fi rizqi", urdu: "Ai Allah! Mere rizq mein barkat de." },
-    { name: "Dua For Safe Journey", arabic: "اللّهُمَّ سَفَرًا مَرْحَبًا", roman: "Allahumma safaran marhaban", urdu: "Ai Allah! Mere safar ko asaan aur safar se bharpur kar de." },
-    { name: "Dua For Healing", arabic: "اللّهُمَّ اشْفِ مَرْضَانَا", roman: "Allahumma ishfi mardana", urdu: "Ai Allah! Hamare mareezon ko shifa de." },
-    { name: "Dua For Clean Heart", arabic: "اللّهُمَّ طَهِّرْ قَلْبِي", roman: "Allahumma tahhir qalbi", urdu: "Ai Allah! Mere dil ko paak kar de." },
-    { name: "Dua For Family", arabic: "اللّهُمَّ اجْعَلْ أُسَرَنَا مُتَّحِدَةً", roman: "Allahumma aj’al usarana muttahidatan", urdu: "Ai Allah! Mere khandan ko ekjut kar." },
-    { name: "Dua For Good Deeds", arabic: "رَبِّ اجْعَلْنِي مِنَ الصَّالِحِينَ", roman: "Rabbi ajilni minas saliheen", urdu: "Ai Rab! Mujhe nek logon mein shamil kar." },
-    { name: "Dua For Success", arabic: "رَبِّ أَفْرِغْ عَلَيْهِمْ صَبْرًا", roman: "Rabbi afrigh alayhim sabran", urdu: "Ai Rab! Inhe kamyabi aur sabr de." },
-    { name: "Dua for Protection from Harm", arabic: "اللّهُمَّ قِنَا عَذَابَ النَّارِ", roman: "Allahumma qina azab an-nar", urdu: "Ai Allah! Hume aag ke azab se bachaa." },
-    { name: "Dua for Hidayat", arabic: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ", roman: "Ihdinas siratal mustaqeem", urdu: "Hume seedha rasta dikhla." },
-    { name: "Dua for Healing from Disease", arabic: "اللّهُمَّ اشْفِهِمْ شِفَاءً لَا يُغَادِرُ سَقَمًا", roman: "Allahumma ishfihim shifaa'an la yughadiru saqaman", urdu: "Ai Allah! Unhe aise shifa de jo kisi bimari ko na chhode." },
-    { name: "Dua for Ease in Life", arabic: "اللّهُمَّ يَسِّرْ لِي أَمْرِي", roman: "Allahumma yassir li amri", urdu: "Ai Allah! Mere kaam asaan kar de." },
-    { name: "Dua for Gratefulness", arabic: "اللّهُمَّ اجْعَلْنِي شَاكِرًا", roman: "Allahumma aj’alni shakiran", urdu: "Ai Allah! Mujhe shukr guzar bana." },
-    { name: "Dua for Love", arabic: "اللّهُمَّ اجْعَلْ قُلُوبَنَا مِلْءَ حُبِّكَ", roman: "Allahumma aj’al quloobana mil’a hubbika", urdu: "Ai Allah! Hamare dil apni mohabbat se bhar de." },
-    { name: "Dua for Wealth", arabic: "اللّهُمَّ رَزُقْنَا فِي رَحْمَتِكَ", roman: "Allahumma razuqna fi rahmatik", urdu: "Ai Allah! Hume apni rahmat se maal-o-daulat de." }
+<div class="dua-box">
+<div class="dua-title">24. Dua for Entering Home</div>
+<div class="arabic">اللّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلِجِ</div>
+<div class="urdu">اے اللہ! میں تجھ سے اچھے داخلے کا سوال کرتا ہوں۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">25. Dua for Leaving Home</div>
+<div class="arabic">بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ</div>
+<div class="urdu">اللہ کے نام سے، میں اللہ پر بھروسہ کرتا ہوں۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">26. Dua for Rain</div>
+<div class="arabic">اللّهُمَّ صَيِّبًا نَافِعًا</div>
+<div class="urdu">اے اللہ! اسے فائدہ مند بارش بنا دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">27. Dua for Safety</div>
+<div class="arabic">اللّهُمَّ احْفَظْنِي</div>
+<div class="urdu">اے اللہ! میری حفاظت فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">28. Dua for Strength</div>
+<div class="arabic">اللّهُمَّ قَوِّنِي</div>
+<div class="urdu">اے اللہ! مجھے طاقت عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">29. Dua for Contentment</div>
+<div class="arabic">اللّهُمَّ رَضِّنِي بِقَضَائِكَ</div>
+<div class="urdu">اے اللہ! مجھے اپنی تقدیر پر راضی رکھ۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">30. Dua for Paradise</div>
+<div class="arabic">اللّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ</div>
+<div class="urdu">اے اللہ! میں تجھ سے جنت کا سوال کرتا ہوں۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">31. Dua for Protection from Hell</div>
+<div class="arabic">اللّهُمَّ أَجِرْنِي مِنَ النَّارِ</div>
+<div class="urdu">اے اللہ! مجھے جہنم سے بچا لے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">32. Dua for Guidance in Decisions</div>
+<div class="arabic">اللّهُمَّ خِرْ لِي وَاخْتَرْ لِي</div>
+<div class="urdu">اے اللہ! میرے لیے بہتر فیصلہ فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">33. Dua for Peace</div>
+<div class="arabic">اللّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ</div>
+<div class="urdu">اے اللہ! تو سلامتی ہے اور تجھ سے ہی سلامتی ہے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">34. Dua for Removing Hardship</div>
+<div class="arabic">لَا إِلَٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ</div>
+<div class="urdu">تیرے سوا کوئی معبود نہیں، میں نے غلطی کی۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">35. Dua for Good Character</div>
+<div class="arabic">اللّهُمَّ حَسِّنْ خُلُقِي</div>
+<div class="urdu">اے اللہ! میرا اخلاق بہتر کر دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">36. Dua for Blessing in Time</div>
+<div class="arabic">اللّهُمَّ بَارِكْ لِي فِي وَقْتِي</div>
+<div class="urdu">اے اللہ! میرے وقت میں برکت دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">37. Dua for Protection from Fitnah</div>
+<div class="arabic">اللّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْفِتَنِ</div>
+<div class="urdu">اے اللہ! میں فتنوں سے تیری پناہ چاہتا ہوں۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">38. Dua for Gratitude</div>
+<div class="arabic">اللّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ</div>
+<div class="urdu">اے اللہ! مجھے تیرا ذکر اور شکر کرنے کی توفیق دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">39. Dua for Success in Exams</div>
+<div class="arabic">اللّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا</div>
+<div class="urdu">اے اللہ! آسانی نہیں مگر جو تو آسان کرے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">40. Dua for Acceptance</div>
+<div class="arabic">رَبَّنَا تَقَبَّلْ مِنَّا</div>
+<div class="urdu">اے ہمارے رب! ہم سے قبول فرما۔</div>
+</div>
+<div class="dua-box">
+<div class="dua-title">41. Dua for Steadfastness</div>
+<div class="arabic">رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا وَثَبِّتْ أَقْدَامَنَا</div>
+<div class="urdu">اے ہمارے رب! ہم پر صبر نازل فرما اور ہمیں ثابت قدم رکھ۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">42. Dua for Mercy</div>
+<div class="arabic">رَبِّ ارْحَمْ وَأَنتَ خَيْرُ الرَّاحِمِينَ</div>
+<div class="urdu">اے رب! رحم فرما، تو سب سے بہتر رحم کرنے والا ہے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">43. Dua for Increase in Good</div>
+<div class="arabic">رَبِّ زِدْنِي خَيْرًا</div>
+<div class="urdu">اے میرے رب! میرے لیے بھلائی میں اضافہ فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">44. Dua for Clean Heart</div>
+<div class="arabic">رَبَّنَا لَا تَجْعَلْ فِي قُلُوبِنَا غِلًّا</div>
+<div class="urdu">اے ہمارے رب! ہمارے دلوں میں کینہ نہ رکھ۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">45. Dua for Protection from Debt</div>
+<div class="arabic">اللّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْمَغْرَمِ</div>
+<div class="urdu">اے اللہ! میں قرض سے تیری پناہ مانگتا ہوں۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">46. Dua for Good in This World</div>
+<div class="arabic">رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً</div>
+<div class="urdu">اے ہمارے رب! ہمیں دنیا میں بھلائی عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">47. Dua for Protection from Shaytan</div>
+<div class="arabic">أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ</div>
+<div class="urdu">میں اللہ کی پناہ چاہتا ہوں شیطان مردود سے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">48. Dua for Strong Imaan</div>
+<div class="arabic">اللّهُمَّ جَدِّدِ الْإِيمَانَ فِي قَلْبِي</div>
+<div class="urdu">اے اللہ! میرے دل میں ایمان کو تازہ کر دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">49. Dua for Good Company</div>
+<div class="arabic">اللّهُمَّ ارْزُقْنِي صُحْبَةَ الصَّالِحِينَ</div>
+<div class="urdu">اے اللہ! مجھے نیک لوگوں کی صحبت عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">50. Dua for Ease in Work</div>
+<div class="arabic">اللّهُمَّ يَسِّرْ وَلَا تُعَسِّرْ</div>
+<div class="urdu">اے اللہ! آسانی فرما، مشکل نہ بنا۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">51. Dua for Forgiving Parents</div>
+<div class="arabic">رَبَّنَا اغْفِرْ لِي وَلِوَالِدَيَّ</div>
+<div class="urdu">اے ہمارے رب! مجھے اور میرے والدین کو بخش دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">52. Dua for Trust in Allah</div>
+<div class="arabic">حَسْبِيَ اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ</div>
+<div class="urdu">اللہ میرے لیے کافی ہے، اس کے سوا کوئی معبود نہیں۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">53. Dua for Removing Fear</div>
+<div class="arabic">اللّهُمَّ آمِنِّي فِي وَطَنِي</div>
+<div class="urdu">اے اللہ! مجھے میرے وطن میں امن عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">54. Dua for Good Thoughts</div>
+<div class="arabic">اللّهُمَّ طَهِّرْ قَلْبِي</div>
+<div class="urdu">اے اللہ! میرے دل کو پاک کر دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">55. Dua for Respect</div>
+<div class="arabic">اللّهُمَّ أَعِزَّنِي</div>
+<div class="urdu">اے اللہ! مجھے عزت عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">56. Dua for Good Future</div>
+<div class="arabic">اللّهُمَّ اجْعَلْ مُسْتَقْبَلِي خَيْرًا</div>
+<div class="urdu">اے اللہ! میرا مستقبل بہتر بنا دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">57. Dua for Happiness</div>
+<div class="arabic">اللّهُمَّ أَسْعِدْ قَلْبِي</div>
+<div class="urdu">اے اللہ! میرے دل کو خوش کر دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">58. Dua for Success in Life</div>
+<div class="arabic">اللّهُمَّ وَفِّقْنِي لِمَا تُحِبُّ</div>
+<div class="urdu">اے اللہ! مجھے اس کام کی توفیق دے جو تجھے پسند ہو۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">59. Dua for Protection of Family</div>
+<div class="arabic">اللّهُمَّ احْفَظْ أَهْلِي</div>
+<div class="urdu">اے اللہ! میرے اہل خانہ کی حفاظت فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">60. Dua for Thankfulness</div>
+<div class="arabic">رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ</div>
+<div class="urdu">اے میرے رب! مجھے اپنی نعمتوں کا شکر ادا کرنے کی توفیق دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">61. Dua for Sincerity</div>
+<div class="arabic">اللّهُمَّ اجْعَلْ عَمَلِي خَالِصًا لَكَ</div>
+<div class="urdu">اے اللہ! میرے عمل کو خالص اپنے لیے بنا دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">62. Dua for Wisdom</div>
+<div class="arabic">رَبِّ هَبْ لِي حُكْمًا</div>
+<div class="urdu">اے میرے رب! مجھے دانائی عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">63. Dua for Good Speech</div>
+<div class="arabic">وَاجْعَل لِّي لِسَانَ صِدْقٍ</div>
+<div class="urdu">اور میرے لیے سچی زبان بنا دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">64. Dua for Content Heart</div>
+<div class="arabic">اللّهُمَّ اقْنَعْنِي بِمَا رَزَقْتَنِي</div>
+<div class="urdu">اے اللہ! مجھے اپنے رزق پر قناعت عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">65. Dua for Light in Life</div>
+<div class="arabic">اللّهُمَّ نَوِّرْ حَيَاتِي</div>
+<div class="urdu">اے اللہ! میری زندگی روشن فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">66. Dua for Protection from Trials</div>
+<div class="arabic">اللّهُمَّ نَجِّنِي مِنَ الْفِتَنِ</div>
+<div class="urdu">اے اللہ! مجھے آزمائشوں سے بچا لے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">67. Dua for Gratitude in Heart</div>
+<div class="arabic">اللّهُمَّ اجْعَلْنِي شَاكِرًا</div>
+<div class="urdu">اے اللہ! مجھے شکر گزار بنا دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">68. Dua for Good Ending</div>
+<div class="arabic">اللّهُمَّ أَحْسِنْ عَاقِبَتَنَا</div>
+<div class="urdu">اے اللہ! ہمارا انجام اچھا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">69. Dua for Increase in Rizq</div>
+<div class="arabic">اللّهُمَّ ارْزُقْنِي رِزْقًا طَيِّبًا</div>
+<div class="urdu">اے اللہ! مجھے پاکیزہ رزق عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">70. Dua for Peace in Heart</div>
+<div class="arabic">اللّهُمَّ أَنْزِلِ السَّكِينَةَ فِي قَلْبِي</div>
+<div class="urdu">اے اللہ! میرے دل میں سکون نازل فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">71. Dua for Guidance Always</div>
+<div class="arabic">اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ</div>
+<div class="urdu">ہمیں سیدھا راستہ دکھا۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">72. Dua for Protection of Children</div>
+<div class="arabic">اللّهُمَّ احْفَظْ أَوْلَادِي</div>
+<div class="urdu">اے اللہ! میری اولاد کی حفاظت فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">73. Dua for Good Health</div>
+<div class="arabic">اللّهُمَّ عَافِنِي فِي بَدَنِي</div>
+<div class="urdu">اے اللہ! مجھے میرے جسم میں عافیت دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">74. Dua for Removal of Stress</div>
+<div class="arabic">اللّهُمَّ أَذْهِبْ عَنِّي الضِّيقَ</div>
+<div class="urdu">اے اللہ! میری تنگی دور فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">75. Dua for Success in Work</div>
+<div class="arabic">اللّهُمَّ بَارِكْ لِي فِي عَمَلِي</div>
+<div class="urdu">اے اللہ! میرے کام میں برکت دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">76. Dua for Forgiveness and Mercy</div>
+<div class="arabic">اللّهُمَّ اغْفِرْ لِي وَارْحَمْنِي</div>
+<div class="urdu">اے اللہ! مجھے بخش دے اور مجھ پر رحم فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">77. Dua for Love of Allah</div>
+<div class="arabic">اللّهُمَّ اجْعَلْ حُبَّكَ أَحَبَّ إِلَيَّ</div>
+<div class="urdu">اے اللہ! اپنی محبت کو میرے لیے سب سے زیادہ محبوب بنا دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">78. Dua for Strong Patience</div>
+<div class="arabic">رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا</div>
+<div class="urdu">اے ہمارے رب! ہم پر صبر نازل فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">79. Dua for Protection in Travel</div>
+<div class="arabic">اللّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَذَا الْبِرَّ وَالتَّقْوَى</div>
+<div class="urdu">اے اللہ! ہم اپنے اس سفر میں نیکی اور تقویٰ کا سوال کرتے ہیں۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">80. Dua for Acceptance of Deeds</div>
+<div class="arabic">تَقَبَّلَ اللَّهُ مِنَّا وَمِنكُمْ</div>
+<div class="urdu">اللہ ہم سے اور آپ سے قبول فرمائے۔</div>
+</div>
+<div class="dua-box">
+<div class="dua-title">81. Dua for Good Intentions</div>
+<div class="arabic">اللّهُمَّ إِنِّي نَوَيْتُ الْخَيْرَ فَيَسِّرْهُ لِي</div>
+<div class="urdu">اے اللہ! میں نے بھلائی کا ارادہ کیا ہے، اسے میرے لیے آسان بنا دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">82. Dua for Relief from Hardship</div>
+<div class="arabic">حَسْبِيَ اللَّهُ وَنِعْمَ الْوَكِيلُ</div>
+<div class="urdu">اللہ میرے لیے کافی ہے اور وہ بہترین کارساز ہے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">83. Dua for Pure Heart</div>
+<div class="arabic">اللّهُمَّ نَقِّ قَلْبِي مِنَ الْخَطَايَا</div>
+<div class="urdu">اے اللہ! میرے دل کو گناہوں سے پاک کر دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">84. Dua for Success in Study</div>
+<div class="arabic">رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي</div>
+<div class="urdu">اے میرے رب! میرا سینہ کھول دے اور میرا کام آسان کر دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">85. Dua for Protection from Enemies</div>
+<div class="arabic">اللّهُمَّ اكْفِنِيهِمْ بِمَا شِئْتَ</div>
+<div class="urdu">اے اللہ! جس طرح چاہے مجھے ان سے بچا لے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">86. Dua for Good Character and Manners</div>
+<div class="arabic">اللّهُمَّ اهْدِنِي لِأَحْسَنِ الْأَخْلَاقِ</div>
+<div class="urdu">اے اللہ! مجھے بہترین اخلاق کی ہدایت دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">87. Dua for Blessing in Family</div>
+<div class="arabic">اللّهُمَّ بَارِكْ لِي فِي أَهْلِي</div>
+<div class="urdu">اے اللہ! میرے اہل و عیال میں برکت دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">88. Dua for Patience and Strength</div>
+<div class="arabic">اللّهُمَّ أَعِنِّي وَاصْبِرْنِي</div>
+<div class="urdu">اے اللہ! میری مدد فرما اور مجھے صبر عطا کر۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">89. Dua for Increase in Faith</div>
+<div class="arabic">اللّهُمَّ زِدْنِي إِيمَانًا</div>
+<div class="urdu">اے اللہ! میرے ایمان میں اضافہ فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">90. Dua for Protection from Sins</div>
+<div class="arabic">اللّهُمَّ جَنِّبْنِي الذُّنُوبَ</div>
+<div class="urdu">اے اللہ! مجھے گناہوں سے بچا لے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">91. Dua for Happiness in Life</div>
+<div class="arabic">اللّهُمَّ اجْعَلْ حَيَاتِي سَعِيدَةً</div>
+<div class="urdu">اے اللہ! میری زندگی خوشگوار بنا دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">92. Dua for Forgiveness of All Believers</div>
+<div class="arabic">رَبَّنَا اغْفِرْ لَنَا وَلِلْمُؤْمِنِينَ</div>
+<div class="urdu">اے ہمارے رب! ہمیں اور تمام مومنوں کو بخش دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">93. Dua for Acceptance of Dua</div>
+<div class="arabic">رَبِّ تَقَبَّلْ دُعَاءِ</div>
+<div class="urdu">اے میرے رب! میری دعا قبول فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">94. Dua for Good Provision</div>
+<div class="arabic">اللّهُمَّ ارْزُقْنِي رِزْقًا وَاسِعًا</div>
+<div class="urdu">اے اللہ! مجھے کشادہ رزق عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">95. Dua for Protection from Evil Eye</div>
+<div class="arabic">أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ</div>
+<div class="urdu">میں اللہ کے کامل کلمات کی پناہ چاہتا ہوں۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">96. Dua for Light in Grave</div>
+<div class="arabic">اللّهُمَّ اجْعَلْ قَبْرِي رَوْضَةً مِنْ رِيَاضِ الْجَنَّةِ</div>
+<div class="urdu">اے اللہ! میری قبر کو جنت کے باغوں میں سے ایک باغ بنا دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">97. Dua for Strong Tawakkul</div>
+<div class="arabic">اللّهُمَّ إِنِّي تَوَكَّلْتُ عَلَيْكَ</div>
+<div class="urdu">اے اللہ! میں نے تجھ پر بھروسہ کیا۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">98. Dua for Thankfulness Always</div>
+<div class="arabic">اللّهُمَّ أَعِنِّي عَلَى شُكْرِكَ</div>
+<div class="urdu">اے اللہ! مجھے تیرا شکر ادا کرنے کی توفیق دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">99. Dua for Success in Every Matter</div>
+<div class="arabic">اللّهُمَّ وَفِّقْنِي فِي كُلِّ أَمْرٍ</div>
+<div class="urdu">اے اللہ! مجھے ہر معاملے میں کامیابی عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">100. Dua for Entering Jannah Without حساب</div>
+<div class="arabic">اللّهُمَّ أَدْخِلْنِي الْجَنَّةَ بِغَيْرِ حِسَابٍ</div>
+<div class="urdu">اے اللہ! مجھے بغیر حساب کے جنت میں داخل فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">101. Dua for Strong Imaan Till Death</div>
+<div class="arabic">اللّهُمَّ ثَبِّتْنِي عَلَى الْإِيمَانِ حَتَّى أَلْقَاكَ</div>
+<div class="urdu">اے اللہ! مجھے ایمان پر قائم رکھ یہاں تک کہ میں تجھ سے ملوں۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">102. Dua for Barakah in Knowledge</div>
+<div class="arabic">اللّهُمَّ بَارِكْ لِي فِي عِلْمِي</div>
+<div class="urdu">اے اللہ! میرے علم میں برکت عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">103. Dua for Protection from Arrogance</div>
+<div class="arabic">اللّهُمَّ طَهِّرْ قَلْبِي مِنَ الْكِبْرِ</div>
+<div class="urdu">اے اللہ! میرے دل کو تکبر سے پاک کر دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">104. Dua for Clean Tongue</div>
+<div class="arabic">اللّهُمَّ احْفَظْ لِسَانِي</div>
+<div class="urdu">اے اللہ! میری زبان کی حفاظت فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">105. Dua for Good Neighbors</div>
+<div class="arabic">اللّهُمَّ ارْزُقْنِي جَارًا صَالِحًا</div>
+<div class="urdu">اے اللہ! مجھے نیک پڑوسی عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">106. Dua for Patience in Hardship</div>
+<div class="arabic">اللّهُمَّ أَجِرْنِي فِي مُصِيبَتِي</div>
+<div class="urdu">اے اللہ! میری مصیبت میں اجر عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">107. Dua for Halal Income</div>
+<div class="arabic">اللّهُمَّ اكْفِنِي بِحَلَالِكَ</div>
+<div class="urdu">اے اللہ! مجھے اپنے حلال سے کفایت عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">108. Dua for Strong Heart</div>
+<div class="arabic">اللّهُمَّ قَوِّ قَلْبِي</div>
+<div class="urdu">اے اللہ! میرے دل کو مضبوط بنا دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">109. Dua for Blessing in Children</div>
+<div class="arabic">اللّهُمَّ بَارِكْ لِي فِي أَوْلَادِي</div>
+<div class="urdu">اے اللہ! میری اولاد میں برکت دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">110. Dua for Forgiving Sins Secretly</div>
+<div class="arabic">اللّهُمَّ اغْفِرْ لِي مَا أَسْرَرْتُ وَمَا أَعْلَنْتُ</div>
+<div class="urdu">اے اللہ! میرے پوشیدہ اور ظاہر گناہوں کو بخش دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">111. Dua for Protection from Hypocrisy</div>
+<div class="arabic">اللّهُمَّ بَاعِدْنِي عَنِ النِّفَاقِ</div>
+<div class="urdu">اے اللہ! مجھے نفاق سے دور رکھ۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">112. Dua for Peaceful Death</div>
+<div class="arabic">اللّهُمَّ تَوَفَّنِي مُسْلِمًا</div>
+<div class="urdu">اے اللہ! مجھے مسلمان ہونے کی حالت میں وفات دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">113. Dua for Good Friends</div>
+<div class="arabic">اللّهُمَّ ارْزُقْنِي أَصْدِقَاءَ صَالِحِينَ</div>
+<div class="urdu">اے اللہ! مجھے نیک دوست عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">114. Dua for Success in Deen and Dunya</div>
+<div class="arabic">رَبَّنَا آتِنَا حَسَنَةً فِي الدُّنْيَا وَالْآخِرَةِ</div>
+<div class="urdu">اے ہمارے رب! ہمیں دنیا اور آخرت میں بھلائی عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">115. Dua for Removing Doubts</div>
+<div class="arabic">اللّهُمَّ أَزِلِ الشَّكَّ مِنْ قَلْبِي</div>
+<div class="urdu">اے اللہ! میرے دل سے شک دور فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">116. Dua for Protection from Major Sins</div>
+<div class="arabic">اللّهُمَّ جَنِّبْنِي الْكَبَائِرَ</div>
+<div class="urdu">اے اللہ! مجھے بڑے گناہوں سے بچا لے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">117. Dua for Strong Memory</div>
+<div class="arabic">اللّهُمَّ قَوِّ ذَاكِرَتِي</div>
+<div class="urdu">اے اللہ! میری یادداشت مضبوط بنا دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">118. Dua for Constant Guidance</div>
+<div class="arabic">اللّهُمَّ اهْدِنِي دَائِمًا</div>
+<div class="urdu">اے اللہ! مجھے ہمیشہ ہدایت پر رکھ۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">119. Dua for Entering Jannah with Family</div>
+<div class="arabic">اللّهُمَّ اجْمَعْنِي مَعَ أَهْلِي فِي الْجَنَّةِ</div>
+<div class="urdu">اے اللہ! مجھے اپنے اہل خانہ کے ساتھ جنت میں جمع فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">120. Dua for Protection from All Evil</div>
+<div class="arabic">اللّهُمَّ احْفَظْنِي مِنْ كُلِّ سُوءٍ</div>
+<div class="urdu">اے اللہ! مجھے ہر برائی سے محفوظ رکھ۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">121. Dua for Strong Tawbah</div>
+<div class="arabic">اللّهُمَّ تُبْ عَلَيَّ تَوْبَةً نَصُوحًا</div>
+<div class="urdu">اے اللہ! مجھ پر سچی توبہ نصیب فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">122. Dua for Protection from Laziness</div>
+<div class="arabic">اللّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكَسَلِ</div>
+<div class="urdu">اے اللہ! میں سستی سے تیری پناہ مانگتا ہوں۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">123. Dua for Clean Intentions</div>
+<div class="arabic">اللّهُمَّ طَهِّرْ نِيَّتِي</div>
+<div class="urdu">اے اللہ! میری نیت پاک کر دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">124. Dua for Protection from Anger</div>
+<div class="arabic">اللّهُمَّ اكْفِنِي شَرَّ غَضَبِي</div>
+<div class="urdu">اے اللہ! مجھے میرے غصے کے شر سے بچا لے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">125. Dua for Good Health and Imaan</div>
+<div class="arabic">اللّهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ وَالْإِيمَانَ</div>
+<div class="urdu">اے اللہ! میں تجھ سے عافیت اور ایمان کا سوال کرتا ہوں۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">126. Dua for Protection from Debt and Poverty</div>
+<div class="arabic">اللّهُمَّ اكْفِنِي الْفَقْرَ وَالدَّيْنَ</div>
+<div class="urdu">اے اللہ! مجھے فقر اور قرض سے محفوظ رکھ۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">127. Dua for Forgiveness for All Sins</div>
+<div class="arabic">اللّهُمَّ اغْفِرْ لِي خَطِيئَتِي كُلَّهَا</div>
+<div class="urdu">اے اللہ! میرے تمام گناہوں کو بخش دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">128. Dua for Good Character Always</div>
+<div class="arabic">اللّهُمَّ زَيِّنِّي بِالْأَخْلَاقِ الْحَسَنَةِ</div>
+<div class="urdu">اے اللہ! مجھے اچھے اخلاق سے مزین فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">129. Dua for Protection from Backbiting</div>
+<div class="arabic">اللّهُمَّ احْفَظْنِي مِنَ الْغِيبَةِ</div>
+<div class="urdu">اے اللہ! مجھے غیبت سے بچا لے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">130. Dua for Strong Patience in Trials</div>
+<div class="arabic">رَبِّ أَفْرِغْ عَلَيَّ صَبْرًا</div>
+<div class="urdu">اے میرے رب! مجھ پر صبر نازل فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">131. Dua for Blessing in Wealth</div>
+<div class="arabic">اللّهُمَّ بَارِكْ لِي فِي مَالِي</div>
+<div class="urdu">اے اللہ! میرے مال میں برکت دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">132. Dua for Protection from Fitnah of Dajjal</div>
+<div class="arabic">اللّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ فِتْنَةِ الدَّجَّالِ</div>
+<div class="urdu">اے اللہ! میں دجال کے فتنہ سے تیری پناہ مانگتا ہوں۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">133. Dua for Light on Day of Judgment</div>
+<div class="arabic">اللّهُمَّ اجْعَلْ لِي نُورًا يَوْمَ الْقِيَامَةِ</div>
+<div class="urdu">اے اللہ! قیامت کے دن میرے لیے نور عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">134. Dua for Protection from Sudden Calamity</div>
+<div class="arabic">اللّهُمَّ احْفَظْنِي مِنَ الْبَلَاءِ الْفَجَائِي</div>
+<div class="urdu">اے اللہ! مجھے اچانک مصیبت سے بچا لے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">135. Dua for Pure Rizq</div>
+<div class="arabic">اللّهُمَّ ارْزُقْنِي رِزْقًا حَلَالًا طَيِّبًا</div>
+<div class="urdu">اے اللہ! مجھے حلال اور پاکیزہ رزق عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">136. Dua for Ease in Marriage</div>
+<div class="arabic">اللّهُمَّ يَسِّرْ لِي الزَّوَاجَ</div>
+<div class="urdu">اے اللہ! میرے لیے نکاح آسان فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">137. Dua for Protection from Jealousy</div>
+<div class="arabic">اللّهُمَّ اكْفِنِي شَرَّ الْحَاسِدِينَ</div>
+<div class="urdu">اے اللہ! مجھے حسد کرنے والوں کے شر سے بچا لے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">138. Dua for Good Dreams</div>
+<div class="arabic">اللّهُمَّ ارْزُقْنِي رُؤْيَا صَالِحَةً</div>
+<div class="urdu">اے اللہ! مجھے نیک خواب عطا فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">139. Dua for Protection from Evil Plans</div>
+<div class="arabic">اللّهُمَّ اكْفِنِي كَيْدَهُمْ</div>
+<div class="urdu">اے اللہ! مجھے ان کی سازشوں سے بچا لے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">140. Dua for Increase in Good Deeds</div>
+<div class="arabic">اللّهُمَّ زِدْنِي مِنَ الصَّالِحَاتِ</div>
+<div class="urdu">اے اللہ! میرے نیک اعمال میں اضافہ فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">141. Dua for Protection from Bad Company</div>
+<div class="arabic">اللّهُمَّ بَاعِدْنِي عَنِ السُّوءِ</div>
+<div class="urdu">اے اللہ! مجھے برے لوگوں سے دور رکھ۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">142. Dua for Clean Heart from Hatred</div>
+<div class="arabic">اللّهُمَّ انْزِعِ الْحِقْدَ مِنْ قَلْبِي</div>
+<div class="urdu">اے اللہ! میرے دل سے نفرت نکال دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">143. Dua for Protection from Poverty</div>
+<div class="arabic">اللّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْفَقْرِ</div>
+<div class="urdu">اے اللہ! میں فقر سے تیری پناہ مانگتا ہوں۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">144. Dua for Barakah in Time</div>
+<div class="arabic">اللّهُمَّ بَارِكْ لِي فِي زَمَنِي</div>
+<div class="urdu">اے اللہ! میرے وقت میں برکت دے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">145. Dua for Strong Faith in Hard Times</div>
+<div class="arabic">اللّهُمَّ قَوِّ إِيمَانِي فِي الشِّدَّةِ</div>
+<div class="urdu">اے اللہ! مشکل وقت میں میرے ایمان کو مضبوط رکھ۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">146. Dua for Protection from Major Trials</div>
+<div class="arabic">اللّهُمَّ نَجِّنِي مِنَ الْمِحَنِ الْكُبْرَى</div>
+<div class="urdu">اے اللہ! مجھے بڑی آزمائشوں سے بچا لے۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">147. Dua for Acceptance of All Good Deeds</div>
+<div class="arabic">اللّهُمَّ تَقَبَّلْ أَعْمَالِي</div>
+<div class="urdu">اے اللہ! میرے تمام اعمال قبول فرما۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">148. Dua for Protection from Shirk</div>
+<div class="arabic">اللّهُمَّ بَاعِدْنِي عَنِ الشِّرْكِ</div>
+<div class="urdu">اے اللہ! مجھے شرک سے دور رکھ۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">149. Dua for Entering Jannah with Prophets</div>
+<div class="arabic">اللّهُمَّ احْشُرْنِي مَعَ النَّبِيِّينَ</div>
+<div class="urdu">اے اللہ! مجھے انبیاء کے ساتھ اٹھا۔</div>
+</div>
+
+<div class="dua-box">
+<div class="dua-title">150. Dua for Complete Protection in Dunia & Akhirah</div>
+<div class="arabic">اللّهُمَّ احْفَظْنِي فِي الدُّنْيَا وَالْآخِرَةِ</div>
+<div class="urdu">اے اللہ! مجھے دنیا اور آخرت دونوں میں محفوظ رکھ۔</div>
+</div>
+
+
+<div class="dua">
+<h3>Dua 151 – Rizq Mein Barkat</h3>
+<p><b>Arabic:</b> اللّهُمَّ بَارِكْ لَنَا فِي رِزْقِنَا</p>
+<p><b>Urdu:</b> اے اللہ ہمارے رزق میں برکت عطا فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 152 – Ilm Mein Izafa</h3>
+<p><b>Arabic:</b> رَبِّ زِدْنِي عِلْمًا</p>
+<p><b>Urdu:</b> اے میرے رب میرے علم میں اضافہ فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 153 – Hidayat Ki Dua</h3>
+<p><b>Arabic:</b> اللّهُمَّ اهْدِنِي الصِّرَاطَ الْمُسْتَقِيمَ</p>
+<p><b>Urdu:</b> اے اللہ مجھے سیدھے راستے کی ہدایت دے۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 154 – Maghfirat Ki Dua</h3>
+<p><b>Arabic:</b> رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ</p>
+<p><b>Urdu:</b> اے میرے رب مجھے اور میرے والدین کو بخش دے۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 155 – Sabr Ki Dua</h3>
+<p><b>Arabic:</b> رَبِّ أَفْرِغْ عَلَيْنَا صَبْرًا وَتَوَفَّنَا مُسْلِمِينَ</p>
+<p><b>Urdu:</b> اے ہمارے رب ہم پر صبر نازل فرما اور ہمیں مسلمان اٹھا۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 156 – Safar Ki Dua</h3>
+<p><b>Arabic:</b> سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا</p>
+<p><b>Urdu:</b> پاک ہے وہ ذات جس نے اسے ہمارے لیے مسخر کیا۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 157 – Dil Ki Safai</h3>
+<p><b>Arabic:</b> اللّهُمَّ نَقِّ قَلْبِي مِنَ الْخَطَايَا</p>
+<p><b>Urdu:</b> اے اللہ میرے دل کو گناہوں سے پاک کر دے۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 158 – Dushman Se Hifazat</h3>
+<p><b>Arabic:</b> حَسْبُنَا اللّهُ وَنِعْمَ الْوَكِيلُ</p>
+<p><b>Urdu:</b> اللہ ہمارے لیے کافی ہے اور وہ بہترین کارساز ہے۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 159 – Imaan Ki Mazbooti</h3>
+<p><b>Arabic:</b> يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ</p>
+<p><b>Urdu:</b> اے دلوں کو پھیرنے والے میرے دل کو اپنے دین پر ثابت رکھ۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 160 – Walidain Ke Liye Dua</h3>
+<p><b>Arabic:</b> رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا</p>
+<p><b>Urdu:</b> اے رب ان پر رحم فرما جیسے انہوں نے بچپن میں میری پرورش کی۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 161 – Afiyat Ki Dua</h3>
+<p><b>Arabic:</b> اللّهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ</p>
+<p><b>Urdu:</b> اے اللہ میں تجھ سے عافیت مانگتا ہوں۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 162 – Sehat Ki Dua</h3>
+<p><b>Arabic:</b> اللّهُمَّ اشْفِنِي شِفَاءً لَا يُغَادِرُ سَقَمًا</p>
+<p><b>Urdu:</b> اے اللہ مجھے ایسی شفا دے جو بیماری کو ختم کر دے۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 163 – Pareshani Door Karne Ki Dua</h3>
+<p><b>Arabic:</b> رَبِّ إِنِّي مَسَّنِيَ الضُّرُّ وَأَنتَ أَرْحَمُ الرَّاحِمِينَ</p>
+<p><b>Urdu:</b> اے رب مجھے تکلیف پہنچی ہے اور تو سب سے زیادہ رحم کرنے والا ہے۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 164 – Ghar Mein Barkat</h3>
+<p><b>Arabic:</b> اللّهُمَّ بَارِكْ لَنَا فِي بُيُوتِنَا</p>
+<p><b>Urdu:</b> اے اللہ ہمارے گھروں میں برکت دے۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 165 – Karz Se Nijat</h3>
+<p><b>Arabic:</b> اللّهُمَّ اكْفِنِي بِحَلَالِكَ عَنْ حَرَامِكَ</p>
+<p><b>Urdu:</b> اے اللہ اپنے حلال سے مجھے کفایت دے اور حرام سے بچا۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 166 – Hifazat Ki Dua</h3>
+<p><b>Arabic:</b> بِسْمِ اللّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ</p>
+<p><b>Urdu:</b> اللہ کے نام سے جس کے نام کے ساتھ کوئی چیز نقصان نہیں پہنچا سکتی۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 167 – Jannat Ki Dua</h3>
+<p><b>Arabic:</b> اللّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ</p>
+<p><b>Urdu:</b> اے اللہ میں تجھ سے جنت مانگتا ہوں۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 168 – Jahannam Se Bachao</h3>
+<p><b>Arabic:</b> اللّهُمَّ أَجِرْنِي مِنَ النَّارِ</p>
+<p><b>Urdu:</b> اے اللہ مجھے جہنم سے بچا۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 169 – Imaan Aur Amal</h3>
+<p><b>Arabic:</b> رَبَّنَا تَقَبَّلْ مِنَّا</p>
+<p><b>Urdu:</b> اے ہمارے رب ہم سے قبول فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 170 – Har Nek Kaam Ki Dua</h3>
+<p><b>Arabic:</b> اللّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ</p>
+<p><b>Urdu:</b> اے اللہ اپنے ذکر، شکر اور اچھی عبادت میں میری مدد فرما۔</p>
+</div>
+
+
+<div class="dua">
+<h3>Dua 171 – Taqwa Ki Dua</h3>
+<p><b>Arabic:</b> اللّهُمَّ آتِ نَفْسِي تَقْوَاهَا</p>
+<p><b>Urdu:</b> اے اللہ میرے نفس کو تقویٰ عطا فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 172 – Gunahon Se Bachao</h3>
+<p><b>Arabic:</b> اللّهُمَّ اعْصِمْنِي مِنَ الْخَطَايَا</p>
+<p><b>Urdu:</b> اے اللہ مجھے گناہوں سے محفوظ رکھ۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 173 – Sachi Niyat Ki Dua</h3>
+<p><b>Arabic:</b> اللّهُمَّ إِنِّي أُرِيدُ وَجْهَكَ</p>
+<p><b>Urdu:</b> اے اللہ میں تیری رضا چاہتا ہوں۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 174 – Mushkil Asaan Karne Ki Dua</h3>
+<p><b>Arabic:</b> رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي</p>
+<p><b>Urdu:</b> اے رب میرا سینہ کھول دے اور میرا کام آسان کر دے۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 175 – Noor Ki Dua</h3>
+<p><b>Arabic:</b> اللّهُمَّ اجْعَلْ فِي قَلْبِي نُورًا</p>
+<p><b>Urdu:</b> اے اللہ میرے دل میں نور عطا فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 176 – Shukar Ki Dua</h3>
+<p><b>Arabic:</b> اللّهُمَّ أَعِنِّي عَلَى شُكْرِكَ</p>
+<p><b>Urdu:</b> اے اللہ اپنے شکر میں میری مدد فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 177 – Halal Rizq</h3>
+<p><b>Arabic:</b> اللّهُمَّ ارْزُقْنِي رِزْقًا حَلَالًا طَيِّبًا</p>
+<p><b>Urdu:</b> اے اللہ مجھے پاک اور حلال رزق عطا فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 178 – Dil Ko Itminan</h3>
+<p><b>Arabic:</b> أَلَا بِذِكْرِ اللّهِ تَطْمَئِنُّ الْقُلُوبُ</p>
+<p><b>Urdu:</b> سن لو اللہ کے ذکر سے دل مطمئن ہوتے ہیں۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 179 – Rehmat Ki Darkhwast</h3>
+<p><b>Arabic:</b> رَبِّ أَدْخِلْنِي فِي رَحْمَتِكَ</p>
+<p><b>Urdu:</b> اے رب مجھے اپنی رحمت میں داخل فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 180 – Fitna Se Bachao</h3>
+<p><b>Arabic:</b> اللّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْفِتَنِ</p>
+<p><b>Urdu:</b> اے اللہ میں فتنوں سے تیری پناہ مانگتا ہوں۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 181 – Sadaqat Ki Dua</h3>
+<p><b>Arabic:</b> اللّهُمَّ اجْعَلْنِي مِنَ الصَّادِقِينَ</p>
+<p><b>Urdu:</b> اے اللہ مجھے سچوں میں شامل فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 182 – Narm Dil</h3>
+<p><b>Arabic:</b> اللّهُمَّ أَلِّنْ قَلْبِي</p>
+<p><b>Urdu:</b> اے اللہ میرے دل کو نرم بنا دے۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 183 – Bura Khayal Door</h3>
+<p><b>Arabic:</b> اللّهُمَّ طَهِّرْ قَلْبِي مِنَ السُّوءِ</p>
+<p><b>Urdu:</b> اے اللہ میرے دل کو برے خیالات سے پاک کر دے۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 184 – Aman Ki Dua</h3>
+<p><b>Arabic:</b> اللّهُمَّ اجْعَلْ بَلَدَنَا آمِنًا</p>
+<p><b>Urdu:</b> اے اللہ ہمارے ملک کو امن عطا فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 185 – Dua Qabool Hone Ki</h3>
+<p><b>Arabic:</b> رَبَّنَا تَقَبَّلْ دُعَاءَ</p>
+<p><b>Urdu:</b> اے ہمارے رب ہماری دعا قبول فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 186 – Musibat Mein Sabr</h3>
+<p><b>Arabic:</b> إِنَّا لِلّهِ وَإِنَّـا إِلَيْهِ رَاجِعونَ</p>
+<p><b>Urdu:</b> ہم اللہ کے ہیں اور اسی کی طرف لوٹنے والے ہیں۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 187 – Hasad Se Bachao</h3>
+<p><b>Arabic:</b> أَعُوذُ بِرَبِّ الْفَلَقِ</p>
+<p><b>Urdu:</b> میں صبح کے رب کی پناہ مانگتا ہوں۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 188 – Waswason Se Hifazat</h3>
+<p><b>Arabic:</b> أَعُوذُ بِرَبِّ النَّاسِ</p>
+<p><b>Urdu:</b> میں لوگوں کے رب کی پناہ مانگتا ہوں۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 189 – Dil Ko Seedha Rakhne Ki</h3>
+<p><b>Arabic:</b> رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا</p>
+<p><b>Urdu:</b> اے ہمارے رب ہمیں ہدایت دینے کے بعد ہمارے دل ٹیڑھے نہ کرنا۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 190 – Aakhirat Ki Bhalai</h3>
+<p><b>Arabic:</b> رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً</p>
+<p><b>Urdu:</b> اے ہمارے رب ہمیں دنیا میں بھلائی دے اور آخرت میں بھی بھلائی دے۔</p>
+</div>
+
+
+<div class="dua">
+<h3>Dua 191 – Rehnumai Ki Dua</h3>
+<p><b>Arabic:</b> اللّهُمَّ اهْدِنِي وَسَدِّدْنِي</p>
+<p><b>Urdu:</b> اے اللہ مجھے ہدایت دے اور سیدھا راستہ دکھا۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 192 – Gunah Maafi</h3>
+<p><b>Arabic:</b> أَسْتَغْفِرُ اللّهَ رَبِّي مِنْ كُلِّ ذَنْبٍ</p>
+<p><b>Urdu:</b> میں اپنے رب اللہ سے ہر گناہ کی معافی مانگتا ہوں۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 193 – Dil Ki Roshni</h3>
+<p><b>Arabic:</b> اللّهُمَّ اجْعَلْ فِي بَصَرِي نُورًا</p>
+<p><b>Urdu:</b> اے اللہ میری آنکھوں میں نور عطا فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 194 – Nek Aulad</h3>
+<p><b>Arabic:</b> رَبِّ هَبْ لِي مِنَ الصَّالِحِينَ</p>
+<p><b>Urdu:</b> اے رب مجھے نیک اولاد عطا فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 195 – Dil Ko Sukoon</h3>
+<p><b>Arabic:</b> اللّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ</p>
+<p><b>Urdu:</b> اے اللہ تو ہی سلامتی والا ہے اور تجھ ہی سے سلامتی ہے۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 196 – Har Burai Se Bachao</h3>
+<p><b>Arabic:</b> اللّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ كُلِّ سُوءٍ</p>
+<p><b>Urdu:</b> اے اللہ میں ہر برائی سے تیری پناہ مانگتا ہوں۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 197 – Rizq Mein Wus'at</h3>
+<p><b>Arabic:</b> اللّهُمَّ وَسِّعْ عَلَيَّ فِي رِزْقِي</p>
+<p><b>Urdu:</b> اے اللہ میرے رزق میں کشادگی عطا فرما۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 198 – Husn-e-Akhlaq</h3>
+<p><b>Arabic:</b> اللّهُمَّ حَسِّنْ خُلُقِي</p>
+<p><b>Urdu:</b> اے اللہ میرے اخلاق اچھے بنا دے۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 199 – Imaan Par Maut</h3>
+<p><b>Arabic:</b> اللّهُمَّ تَوَفَّنِي مُسْلِمًا</p>
+<p><b>Urdu:</b> اے اللہ مجھے ایمان کی حالت میں وفات دے۔</p>
+</div>
+
+<div class="dua">
+<h3>Dua 200 – Allah Ki Raza</h3>
+<p><b>Arabic:</b> اللّهُمَّ ارْضَ عَنِّي</p>
+<p><b>Urdu:</b> اے اللہ مجھ سے راضی ہو جا۔</p>
+</div>
+
 ];
 
-let container = document.getElementById("duaContainer");
-
-duas.forEach(dua => {
-    container.innerHTML += `
-        <div class="dua-card">
-            <div class="dua-name">${dua.name}</div>
+function displayDuas(list){
+    const container=document.getElementById("duaContainer");
+    container.innerHTML="";
+    list.forEach((dua)=>{
+        container.innerHTML+=`
+        <div class="duaCard">
+            <div class="title">${dua.title}</div>
             <div class="arabic">${dua.arabic}</div>
-            <div class="roman">${dua.roman}</div>
             <div class="urdu">${dua.urdu}</div>
-        </div>
-        <hr>
-    `;
+            <button onclick="tasbeeh(this)">Tasbeeh</button>
+            <span class="counter">0</span>
+        </div>`;
+    });
+}
+
+function tasbeeh(btn){
+    let counter=btn.nextElementSibling;
+    counter.innerText=parseInt(counter.innerText)+1;
+}
+
+document.getElementById("search").addEventListener("input",function(){
+    let value=this.value.toLowerCase();
+    let filtered=duas.filter(d=>
+        d.title.toLowerCase().includes(value) ||
+        d.arabic.includes(value) ||
+        d.urdu.includes(value)
+    );
+    displayDuas(filtered);
 });
+
+document.getElementById("category").addEventListener("change",function(){
+    let cat=this.value;
+    if(cat==="all"){
+        displayDuas(duas);
+    }else{
+        displayDuas(duas.filter(d=>d.category===cat));
+    }
+});
+
+displayDuas(duas);
+
 </script>
 
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Islamic Dua Collection (41–60)</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f7f7f7;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        color: #2c3e50;
-    }
-    .dua-card {
-        background-color: white;
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dua-name {
-        font-size: 20px;
-        color: #2980b9;
-        font-weight: bold;
-    }
-    .arabic {
-        font-size: 22px;
-        direction: rtl;
-        text-align: right;
-        margin-top: 10px;
-    }
-    .roman {
-        color: #34495e;
-        margin-top: 5px;
-    }
-    .urdu {
-        color: #27ae60;
-        margin-top: 5px;
-    }
-    hr {
-        border: 0;
-        border-top: 1px solid #e0e0e0;
-        margin: 20px 0;
-    }
-</style>
-</head>
-<body>
 
-<h1>Islamic Dua Collection (41–60)</h1>
 
-<div id="duaContainer"></div>
 
-<script>
-let duas = [
-    { name: "Dua For Health", arabic: "اللّهُمَّ اشْفِهِمْ شِفَاءً لَا يُغَادِرُ سَقَمًا", roman: "Allahumma ishfihim shifaa'an la yughadiru saqaman", urdu: "Ai Allah! Unhe aise shifa de jo kisi bimari ko na chhode." },
-    { name: "Dua For Sustenance", arabic: "اللّهُمَّ رَزُقْنَا فِي رَحْمَتِكَ", roman: "Allahumma razuqna fi rahmatik", urdu: "Ai Allah! Hume apni rahmat se maal-o-daulat de." },
-    { name: "Dua For Gratitude", arabic: "اللّهُمَّ اجْعَلْنِي شَاكِرًا", roman: "Allahumma aj’alni shakiran", urdu: "Ai Allah! Mujhe shukr guzar bana." },
-    { name: "Dua For Wisdom", arabic: "رَبِّ زِدْنِي حِكْمَةً", roman: "Rabbi zidni hikmatan", urdu: "Ai Rab! Mujhe hikmat de." },
-    { name: "Dua For Ease", arabic: "اللّهُمَّ يَسِّرْ لِي أَمْرِي", roman: "Allahumma yassir li amri", urdu: "Ai Allah! Mere kaam asaan kar de." },
-    { name: "Dua For Forgiveness of Parents", arabic: "رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ", roman: "Rabbi ghfir li wa liwalidayya", urdu: "Ai Rab! Mere aur mere walidain ki maafi de." },
-    { name: "Dua For Strength", arabic: "اللّهُمَّ قَوِّنِي", roman: "Allahumma qawwini", urdu: "Ai Allah! Mujhe mazbooti de." },
-    { name: "Dua For Success in Work", arabic: "اللّهُمَّ اجْعَلْ لِي فِي عَمَلِي بَرَكَةً", roman: "Allahumma aj’al li fi amali barakatan", urdu: "Ai Allah! Mere kaam mein barkat de." },
-    { name: "Dua For Peace of Mind", arabic: "اللّهُمَّ جَعَلْنِي مِنَ السَّلَامِ", roman: "Allahumma ja’alni minas salami", urdu: "Ai Allah! Mujhe sukoon aur aman de." },
-    { name: "Dua For Patience During Hardship", arabic: "اللّهُمَّ مَحِّنِي فِي صَبْرِي", roman: "Allahumma mahini fi sabri", urdu: "Ai Allah! Meri mushkilon mein sabr de." },
-    { name: "Dua For The Deceased", arabic: "اللّهُمَّ اجْعَلْهُ فِي جَنَّةِ النَّعِيمِ", roman: "Allahumma aj’ilhu fi jannatil na’eem", urdu: "Ai Allah! Unko apni jannat mein jagah de." },
-    { name: "Dua For Kindness", arabic: "اللّهُمَّ اجْعَلْنِي مِنَ الرَّحْمَةِ", roman: "Allahumma aj’alni minas rahma", urdu: "Ai Allah! Mujhe reham aur karam de." },
-    { name: "Dua For Peace in the World", arabic: "اللّهُمَّ اجْعَلْ عَالَمِي آمَنًا", roman: "Allahumma aj’al aalami aaman", urdu: "Ai Allah! Mere duniya ko aman de." },
-    { name: "Dua For Parents' Wellbeing", arabic: "رَبِّ اجْعَلْهُ مِمَّنْ رَضِيْتَ عَنْهُمْ", roman: "Rabbi aj’alhu mimman radiyta ‘anhum", urdu: "Ai Rab! Mere walidain ki khushi ka sabab ban." },
-    { name: "Dua For Generosity", arabic: "اللّهُمَّ جَعَلْنِي مِنَ الْمُتَصَدِّقِينَ", roman: "Allahumma ja’alni minas mutasadiqueen", urdu: "Ai Allah! Mujhe khudai maal mein se kharch karne wala bana." },
-    { name: "Dua For Getting Married", arabic: "اللّهُمَّ يَسِّرْ لِي زَوَاجًا", roman: "Allahumma yassir li zawajan", urdu: "Ai Allah! Mera shaadi ka rasta asaan kar." },
-    { name: "Dua For The Good", arabic: "اللّهُمَّ اجْعَلْنِي مِنَ الصَّالِحِينَ", roman: "Allahumma aj’alni minas saliheen", urdu: "Ai Allah! Mujhe nek aur behtar insan bana." }
-];
-
-let container = document.getElementById("duaContainer");
-
-duas.forEach(dua => {
-    container.innerHTML += `
-        <div class="dua-card">
-            <div class="dua-name">${dua.name}</div>
-            <div class="arabic">${dua.arabic}</div>
-            <div class="roman">${dua.roman}</div>
-            <div class="urdu">${dua.urdu}</div>
-        </div>
-        <hr>
-    `;
-});
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Islamic Dua Collection (41–60)</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f7f7f7;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        color: #2c3e50;
-    }
-    .dua-card {
-        background-color: white;
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dua-name {
-        font-size: 20px;
-        color: #2980b9;
-        font-weight: bold;
-    }
-    .arabic {
-        font-size: 22px;
-        direction: rtl;
-        text-align: right;
-        margin-top: 10px;
-    }
-    .roman {
-        color: #34495e;
-        margin-top: 5px;
-    }
-    .urdu {
-        color: #27ae60;
-        margin-top: 5px;
-    }
-    hr {
-        border: 0;
-        border-top: 1px solid #e0e0e0;
-        margin: 20px 0;
-    }
-</style>
-</head>
-<body>
-
-<h1>Islamic Dua Collection (41–60)</h1>
-
-<div id="duaContainer"></div>
-
-<script>
-let duas = [
-    { name: "Dua For Health", arabic: "اللّهُمَّ اشْفِهِمْ شِفَاءً لَا يُغَادِرُ سَقَمًا", roman: "Allahumma ishfihim shifaa'an la yughadiru saqaman", urdu: "Ai Allah! Unhe aise shifa de jo kisi bimari ko na chhode." },
-    { name: "Dua For Sustenance", arabic: "اللّهُمَّ رَزُقْنَا فِي رَحْمَتِكَ", roman: "Allahumma razuqna fi rahmatik", urdu: "Ai Allah! Hume apni rahmat se maal-o-daulat de." },
-    { name: "Dua For Gratitude", arabic: "اللّهُمَّ اجْعَلْنِي شَاكِرًا", roman: "Allahumma aj’alni shakiran", urdu: "Ai Allah! Mujhe shukr guzar bana." },
-    { name: "Dua For Wisdom", arabic: "رَبِّ زِدْنِي حِكْمَةً", roman: "Rabbi zidni hikmatan", urdu: "Ai Rab! Mujhe hikmat de." },
-    { name: "Dua For Ease", arabic: "اللّهُمَّ يَسِّرْ لِي أَمْرِي", roman: "Allahumma yassir li amri", urdu: "Ai Allah! Mere kaam asaan kar de." },
-    { name: "Dua For Forgiveness of Parents", arabic: "رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ", roman: "Rabbi ghfir li wa liwalidayya", urdu: "Ai Rab! Mere aur mere walidain ki maafi de." },
-    { name: "Dua For Strength", arabic: "اللّهُمَّ قَوِّنِي", roman: "Allahumma qawwini", urdu: "Ai Allah! Mujhe mazbooti de." },
-    { name: "Dua For Success in Work", arabic: "اللّهُمَّ اجْعَلْ لِي فِي عَمَلِي بَرَكَةً", roman: "Allahumma aj’al li fi amali barakatan", urdu: "Ai Allah! Mere kaam mein barkat de." },
-    { name: "Dua For Peace of Mind", arabic: "اللّهُمَّ جَعَلْنِي مِنَ السَّلَامِ", roman: "Allahumma ja’alni minas salami", urdu: "Ai Allah! Mujhe sukoon aur aman de." },
-    { name: "Dua For Patience During Hardship", arabic: "اللّهُمَّ مَحِّنِي فِي صَبْرِي", roman: "Allahumma mahini fi sabri", urdu: "Ai Allah! Meri mushkilon mein sabr de." },
-    { name: "Dua For The Deceased", arabic: "اللّهُمَّ اجْعَلْهُ فِي جَنَّةِ النَّعِيمِ", roman: "Allahumma aj’ilhu fi jannatil na’eem", urdu: "Ai Allah! Unko apni jannat mein jagah de." },
-    { name: "Dua For Kindness", arabic: "اللّهُمَّ اجْعَلْنِي مِنَ الرَّحْمَةِ", roman: "Allahumma aj’alni minas rahma", urdu: "Ai Allah! Mujhe reham aur karam de." },
-    { name: "Dua For Peace in the World", arabic: "اللّهُمَّ اجْعَلْ عَالَمِي آمَنًا", roman: "Allahumma aj’al aalami aaman", urdu: "Ai Allah! Mere duniya ko aman de." },
-    { name: "Dua For Parents' Wellbeing", arabic: "رَبِّ اجْعَلْهُ مِمَّنْ رَضِيْتَ عَنْهُمْ", roman: "Rabbi aj’alhu mimman radiyta ‘anhum", urdu: "Ai Rab! Mere walidain ki khushi ka sabab ban." },
-    { name: "Dua For Generosity", arabic: "اللّهُمَّ جَعَلْنِي مِنَ الْمُتَصَدِّقِينَ", roman: "Allahumma ja’alni minas mutasadiqueen", urdu: "Ai Allah! Mujhe khudai maal mein se kharch karne wala bana." },
-    { name: "Dua For Getting Married", arabic: "اللّهُمَّ يَسِّرْ لِي زَوَاجًا", roman: "Allahumma yassir li zawajan", urdu: "Ai Allah! Mera shaadi ka rasta asaan kar." },
-    { name: "Dua For The Good", arabic: "اللّهُمَّ اجْعَلْنِي مِنَ الصَّالِحِينَ", roman: "Allahumma aj’alni minas saliheen", urdu: "Ai Allah! Mujhe nek aur behtar insan bana." }
-];
-
-let container = document.getElementById("duaContainer");
-
-duas.forEach(dua => {
-    container.innerHTML += `
-        <div class="dua-card">
-            <div class="dua-name">${dua.name}</div>
-            <div class="arabic">${dua.arabic}</div>
-            <div class="roman">${dua.roman}</div>
-            <div class="urdu">${dua.urdu}</div>
-        </div>
-        <hr>
-    `;
-});
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Islamic Dua Collection (61–80)</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f7f7f7;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        color: #2c3e50;
-    }
-    .dua-card {
-        background-color: white;
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dua-name {
-        font-size: 20px;
-        color: #2980b9;
-        font-weight: bold;
-    }
-    .arabic {
-        font-size: 22px;
-        direction: rtl;
-        text-align: right;
-        margin-top: 10px;
-    }
-    .roman {
-        color: #34495e;
-        margin-top: 5px;
-    }
-    .urdu {
-        color: #27ae60;
-        margin-top: 5px;
-    }
-    hr {
-        border: 0;
-        border-top: 1px solid #e0e0e0;
-        margin: 20px 0;
-    }
-</style>
-</head>
-<body>
-
-<h1>Islamic Dua Collection (61–80)</h1>
-
-<div id="duaContainer"></div>
-
-<script>
-let duas = [
-    { name: "Dua For Relief", arabic: "اللّهُمَّ فَرِّجْ عَنَّا", roman: "Allahumma farij 'anna", urdu: "Ai Allah! Hamari mushkilat door kar." },
-    { name: "Dua For Happiness", arabic: "اللّهُمَّ اجْعَلْنِي سَعِيدًا", roman: "Allahumma aj’ilni sa'eedan", urdu: "Ai Allah! Mujhe khushi de." },
-    { name: "Dua For Guidance", arabic: "اللّهُمَّ اهْدِنَا إِلَى الصِّرَاطِ الْمُسْتَقِيمِ", roman: "Allahumma ihdina ila as-siratal mustaqeem", urdu: "Ai Allah! Hume seedha rasta dikhla." },
-    { name: "Dua For Mercy", arabic: "اللّهُمَّ رَحْمَتَكَ", roman: "Allahumma rahmataka", urdu: "Ai Allah! Teri rahmat chahiye." },
-    { name: "Dua For Long Life", arabic: "اللّهُمَّ طَوِّلْ فِي عُمُرِي", roman: "Allahumma tawwil fi umri", urdu: "Ai Allah! Mere umar ko lamba kar de." },
-    { name: "Dua For Prosperous Life", arabic: "اللّهُمَّ بَارِكْ فِي عُمُرِي", roman: "Allahumma barik fi umri", urdu: "Ai Allah! Mere jeene ki barkat de." },
-    { name: "Dua For Successful Work", arabic: "اللّهُمَّ اجْعَلْ عَمَلِي مُوَفَّقًا", roman: "Allahumma aj’al amali muvaffaqan", urdu: "Ai Allah! Mere kaam ko kamyabi de." },
-    { name: "Dua For Wealth and Abundance", arabic: "اللّهُمَّ اجْعَلْ لِي فِي رَحْمَتِكَ رَزَقًا", roman: "Allahumma aj’al li fi rahmatik rizqan", urdu: "Ai Allah! Mere rizq mein barkat de." },
-    { name: "Dua For Cleanliness", arabic: "اللّهُمَّ طَهِّرْ قَلْبِي", roman: "Allahumma tahhir qalbi", urdu: "Ai Allah! Mere dil ko paak kar de." },
-    { name: "Dua For Peaceful Heart", arabic: "اللّهُمَّ اجْعَلْ قَلْبِي سَالِمًا", roman: "Allahumma aj’al qalbi saliman", urdu: "Ai Allah! Mere dil ko sukoon de." },
-    { name: "Dua For A Good Partner", arabic: "اللّهُمَّ اجْعَلْ زَوَاجِي رَحْمَةً", roman: "Allahumma aj’al zawaji rahmatan", urdu: "Ai Allah! Mere shaadi ko apni rahmat se bhar de." },
-    { name: "Dua For Generosity", arabic: "اللّهُمَّ اجْعَلْنِي سَخِيًّا", roman: "Allahumma aj’alni sakhiyaan", urdu: "Ai Allah! Mujhe khudai maal mein se kharch karne wala bana." },
-    { name: "Dua For Resilience", arabic: "اللّهُمَّ اجْعَلْنِي فِي صَبْرٍ", roman: "Allahumma aj’alni fi sabrin", urdu: "Ai Allah! Mujhe sabr de." },
-    { name: "Dua For Humility", arabic: "اللّهُمَّ اجْعَلْنِي فِي التَّوَاضُعِ", roman: "Allahumma aj’alni fi at-tawadudi", urdu: "Ai Allah! Mujhe inasaaf aur tawadhu de." },
-    { name: "Dua For Contentment", arabic: "اللّهُمَّ اجْعَلْنِي رَاضِيًا", roman: "Allahumma aj’alni radhiyan", urdu: "Ai Allah! Mujhe apne faislon se raza mand bana." },
-    { name: "Dua For Peaceful Life", arabic: "اللّهُمَّ اجْعَلْ حَيَاتِي سَعِيدَةً", roman: "Allahumma aj’al hayati sa'eedatan", urdu: "Ai Allah! Meri zindagi ko khushi se bhar de." }
-];
-
-let container = document.getElementById("duaContainer");
-
-duas.forEach(dua => {
-    container.innerHTML += `
-        <div class="dua-card">
-            <div class="dua-name">${dua.name}</div>
-            <div class="arabic">${dua.arabic}</div>
-            <div class="roman">${dua.roman}</div>
-            <div class="urdu">${dua.urdu}</div>
-        </div>
-        <hr>
-    `;
-});
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Islamic Dua Collection (81–100)</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f7f7f7;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        color: #2c3e50;
-    }
-    .dua-card {
-        background-color: white;
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dua-name {
-        font-size: 20px;
-        color: #2980b9;
-        font-weight: bold;
-    }
-    .arabic {
-        font-size: 22px;
-        direction: rtl;
-        text-align: right;
-        margin-top: 10px;
-    }
-    .roman {
-        color: #34495e;
-        margin-top: 5px;
-    }
-    .urdu {
-        color: #27ae60;
-        margin-top: 5px;
-    }
-    hr {
-        border: 0;
-        border-top: 1px solid #e0e0e0;
-        margin: 20px 0;
-    }
-</style>
-</head>
-<body>
-
-<h1>Islamic Dua Collection (81–100)</h1>
-
-<div id="duaContainer"></div>
-
-<script>
-let duas = [
-    { name: "Dua For The Sick", arabic: "اللّهُمَّ اشْفِهِمْ شِفَاءً لَا يُغَادِرُ سَقَمًا", roman: "Allahumma ishfihim shifaa'an la yughadiru saqaman", urdu: "Ai Allah! Unhe aise shifa de jo kisi bimari ko na chhode." },
-    { name: "Dua For Financial Blessings", arabic: "اللّهُمَّ رَزُقْنَا فِي رَحْمَتِكَ", roman: "Allahumma razuqna fi rahmatik", urdu: "Ai Allah! Hume apni rahmat se maal-o-daulat de." },
-    { name: "Dua For Success in Business", arabic: "اللّهُمَّ بَارِكْ لِي فِي رِزْقِي", roman: "Allahumma barik li fi rizqi", urdu: "Ai Allah! Mere rizq mein barkat de." },
-    { name: "Dua For A Good Spouse", arabic: "اللّهُمَّ اجْعَلْ لِي زَوَاجًا", roman: "Allahumma aj’al li zawajan", urdu: "Ai Allah! Mere liye ek achi life partner de." },
-    { name: "Dua For Children", arabic: "اللّهُمَّ اجْعَلْ أَفْرَادَ عَائِلَتِي مُسْتَقِيمِينَ", roman: "Allahumma aj’al afrada 'aailati mustaqeemeen", urdu: "Ai Allah! Mere khandan ko sidha rasta dikhla." },
-    { name: "Dua For Patience", arabic: "اللّهُمَّ اجْعَلْنِي مِنَ الصَّابِرِينَ", roman: "Allahumma aj’alni minas sabireen", urdu: "Ai Allah! Mujhe sabr de." },
-    { name: "Dua For Relief From Anxiety", arabic: "اللّهُمَّ اجْعَلْنِي فِي سَلاَمٍ", roman: "Allahumma aj’alni fi salaamin", urdu: "Ai Allah! Mere dil ko sukoon de." },
-    { name: "Dua For Strength in Trials", arabic: "اللّهُمَّ اجْعَلْنِي مِنَ الْمُحْتَمَلِينَ", roman: "Allahumma aj’alni mina al-muhtameleen", urdu: "Ai Allah! Mujhe mazbooti aur sabr de." },
-    { name: "Dua For The Departed Soul", arabic: "اللّهُمَّ اجْعَلْهُ فِي جَنَّةِ النَّعِيمِ", roman: "Allahumma aj’ilhu fi jannatil na’eem", urdu: "Ai Allah! Uski rooh ko apni jannat mein jagah de." },
-    { name: "Dua For Humility", arabic: "اللّهُمَّ اجْعَلْنِي فِي التَّوَاضُعِ", roman: "Allahumma aj’alni fi at-tawadudi", urdu: "Ai Allah! Mujhe inasaaf aur tawadhu de." },
-    { name: "Dua For Marriage", arabic: "اللّهُمَّ اجْعَلْ زَوَاجِي رَحْمَةً", roman: "Allahumma aj’al zawaji rahmatan", urdu: "Ai Allah! Mere shaadi ko apni rahmat se bhar de." },
-    { name: "Dua For Wisdom in Decision Making", arabic: "اللّهُمَّ اجْعَلْنِي حَكِيمًا", roman: "Allahumma aj’alni hakeemaan", urdu: "Ai Allah! Mujhe hikmat de." },
-    { name: "Dua For Gratitude", arabic: "اللّهُمَّ اجْعَلْنِي شَاكِرًا", roman: "Allahumma aj’alni shakiran", urdu: "Ai Allah! Mujhe shukr guzar bana." },
-    { name: "Dua For Contentment", arabic: "اللّهُمَّ اجْعَلْنِي رَاضِيًا", roman: "Allahumma aj’alni radhiyan", urdu: "Ai Allah! Mujhe apne faislon se raza mand bana." },
-    { name: "Dua For Overcoming Fear", arabic: "اللّهُمَّ اجْعَلْنِي فِي أَمَانِكَ", roman: "Allahumma aj’alni fi amaanika", urdu: "Ai Allah! Mere dil ko dar se azaadi de." }
-];
-
-let container = document.getElementById("duaContainer");
-
-duas.forEach(dua => {
-    container.innerHTML += `
-        <div class="dua-card">
-            <div class="dua-name">${dua.name}</div>
-            <div class="arabic">${dua.arabic}</div>
-            <div class="roman">${dua.roman}</div>
-            <div class="urdu">${dua.urdu}</div>
-        </div>
-        <hr>
-    `;
-});
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Islamic Dua Collection (101–120)</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f7f7f7;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        color: #2c3e50;
-    }
-    .dua-card {
-        background-color: white;
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dua-name {
-        font-size: 20px;
-        color: #2980b9;
-        font-weight: bold;
-    }
-    .arabic {
-        font-size: 22px;
-        direction: rtl;
-        text-align: right;
-        margin-top: 10px;
-    }
-    .roman {
-        color: #34495e;
-        margin-top: 5px;
-    }
-    .urdu {
-        color: #27ae60;
-        margin-top: 5px;
-    }
-    hr {
-        border: 0;
-        border-top: 1px solid #e0e0e0;
-        margin: 20px 0;
-    }
-</style>
-</head>
-<body>
-
-<h1>Islamic Dua Collection (101–120)</h1>
-
-<div id="duaContainer"></div>
-
-<script>
-let duas = [
-    { name: "Dua For Relief from Distress", arabic: "اللّهُمَّ فَرِّجْ عَنَّا", roman: "Allahumma farij 'anna", urdu: "Ai Allah! Hamari mushkilon ko door kar." },
-    { name: "Dua For Help in Time of Need", arabic: "اللّهُمَّ إِنِّي أَفْتَقِرُ إِلَيْكَ", roman: "Allahumma inni aftaqiru ilayk", urdu: "Ai Allah! Main teri madad ka mohtaaj hoon." },
-    { name: "Dua For Overcoming Problems", arabic: "اللّهُمَّ إِنِّي تَفَجُّو إِلَيْكَ", roman: "Allahumma inni tafajju ilayk", urdu: "Ai Allah! Mere tamam masail ko asaan kar de." },
-    { name: "Dua For Calmness and Serenity", arabic: "اللّهُمَّ اجْعَلْنِي سَابِرًا", roman: "Allahumma aj’alni sabiran", urdu: "Ai Allah! Mujhe sabr de." },
-    { name: "Dua For Protection from Enemies", arabic: "اللّهُمَّ قِنَا شَرَّ أَعْدَائِنَا", roman: "Allahumma qina sharra adaa'ina", urdu: "Ai Allah! Hume humare dushmanon se bachaa." },
-    { name: "Dua For Good Health", arabic: "اللّهُمَّ اجْعَلْ جَسَدِي سَحِيحًا", roman: "Allahumma aj’al jasadi saheehan", urdu: "Ai Allah! Mere jism ko sehatmand bana." },
-    { name: "Dua For Getting Rid of Anxiety", arabic: "اللّهُمَّ اجْعَلْنِي فِي سَلاَمٍ", roman: "Allahumma aj’alni fi salaamin", urdu: "Ai Allah! Mere dil ko sukoon de." },
-    { name: "Dua For Happiness and Success", arabic: "اللّهُمَّ اجْعَلْنِي سَعِيدًا", roman: "Allahumma aj’ilni sa'eedan", urdu: "Ai Allah! Mujhe khush rakh aur kamyab bana." },
-    { name: "Dua For The Deceased", arabic: "اللّهُمَّ اجْعَلْهُ فِي جَنَّةِ النَّعِيمِ", roman: "Allahumma aj’ilhu fi jannatil na’eem", urdu: "Ai Allah! Uski rooh ko apni jannat mein jagah de." },
-    { name: "Dua For Success in Exams", arabic: "اللّهُمَّ اجْعَلْنِي مِنَ النَّاجِحِينَ", roman: "Allahumma aj’alni mina an-najiheen", urdu: "Ai Allah! Mujhe imtihan mein kamyabi de." },
-    { name: "Dua For Peace of Mind", arabic: "اللّهُمَّ اجْعَلْ قَلْبِي سَابِرًا", roman: "Allahumma aj’al qalbi sabiran", urdu: "Ai Allah! Mere dil ko sukoon de." },
-    { name: "Dua For Good Character", arabic: "اللّهُمَّ اجْعَلْنِي فِي الصِّدْقِ", roman: "Allahumma aj’alni fi as-sidqi", urdu: "Ai Allah! Mujhe saccha bana." },
-    { name: "Dua For Guidance", arabic: "اللّهُمَّ اجْعَلْنِي فِي الْهُدَى", roman: "Allahumma aj’alni fi al-huda", urdu: "Ai Allah! Mujhe hidayat de." },
-    { name: "Dua For Help in Time of Fear", arabic: "اللّهُمَّ اجْعَلْنِي فِي أَمَانِكَ", roman: "Allahumma aj’alni fi amaanika", urdu: "Ai Allah! Mujhe apni panah mein rakh." },
-    { name: "Dua For Getting Married", arabic: "اللّهُمَّ اجْعَلْ لِي زَوَاجًا", roman: "Allahumma aj’al li zawajan", urdu: "Ai Allah! Mere liye achi shaadi ka rasta asaan kar." }
-];
-
-let container = document.getElementById("duaContainer");
-
-duas.forEach(dua => {
-    container.innerHTML += `
-        <div class="dua-card">
-            <div class="dua-name">${dua.name}</div>
-            <div class="arabic">${dua.arabic}</div>
-            <div class="roman">${dua.roman}</div>
-            <div class="urdu">${dua.urdu}</div>
-        </div>
-        <hr>
-    `;
-});
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Islamic Dua Collection (121–140)</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f7f7f7;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        color: #2c3e50;
-    }
-    .dua-card {
-        background-color: white;
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dua-name {
-        font-size: 20px;
-        color: #2980b9;
-        font-weight: bold;
-    }
-    .arabic {
-        font-size: 22px;
-        direction: rtl;
-        text-align: right;
-        margin-top: 10px;
-    }
-    .roman {
-        color: #34495e;
-        margin-top: 5px;
-    }
-    .urdu {
-        color: #27ae60;
-        margin-top: 5px;
-    }
-    hr {
-        border: 0;
-        border-top: 1px solid #e0e0e0;
-        margin: 20px 0;
-    }
-</style>
-</head>
-<body>
-
-<h1>Islamic Dua Collection (121–140)</h1>
-
-<div id="duaContainer"></div>
-
-<script>
-let duas = [
-    { name: "Dua For Help in Difficulty", arabic: "اللّهُمَّ فَرِّجْ عَنَّا", roman: "Allahumma farij 'anna", urdu: "Ai Allah! Hamari mushkilat door kar." },
-    { name: "Dua For Success in Studies", arabic: "اللّهُمَّ اجْعَلْنِي مِنَ النَّاجِحِينَ", roman: "Allahumma aj’alni mina an-najiheen", urdu: "Ai Allah! Mujhe imtihan mein kamyabi de." },
-    { name: "Dua For Peace and Prosperity", arabic: "اللّهُمَّ اجْعَلْنَا فِي سَلاَمٍ وَرَحْمَةٍ", roman: "Allahumma aj’alna fi salaamin wa rahmatin", urdu: "Ai Allah! Humare liye aman aur rahmat ka sabab ban." },
-    { name: "Dua For Success in Marriage", arabic: "اللّهُمَّ اجْعَلْ زَوَاجِي رَحْمَةً", roman: "Allahumma aj’al zawaji rahmatan", urdu: "Ai Allah! Mere shaadi ko apni rahmat se bhar de." },
-    { name: "Dua For Good Health", arabic: "اللّهُمَّ اجْعَلْ جَسَدِي سَحِيحًا", roman: "Allahumma aj’al jasadi saheehan", urdu: "Ai Allah! Mere jism ko sehatmand bana." },
-    { name: "Dua For Protection from Harm", arabic: "اللّهُمَّ قِنَا شَرَّ النَّاسِ", roman: "Allahumma qina sharra an-naas", urdu: "Ai Allah! Hume logon ke burayee se bachaa." },
-    { name: "Dua For Forgiveness", arabic: "رَبِّ اغْفِرْ لِي", roman: "Rabbi ghfir li", urdu: "Ai mere Rab! Mujhe bakhsh de." },
-    { name: "Dua For Safe Journey", arabic: "اللّهُمَّ سَفَرًا مَرْحَبًا", roman: "Allahumma safaran marhaban", urdu: "Ai Allah! Mere safar ko asaan aur safar se bharpur kar de." },
-    { name: "Dua For Knowledge", arabic: "رَبِّ زِدْنِي عِلْمًا", roman: "Rabbi zidni ilma", urdu: "Ai Rab! Mere ilm mein izafa farma." },
-    { name: "Dua For Peaceful Mind", arabic: "اللّهُمَّ اجْعَلْ قَلْبِي سَابِرًا", roman: "Allahumma aj’al qalbi sabiran", urdu: "Ai Allah! Mere dil ko sukoon de." },
-    { name: "Dua For Protection from Evil Eye", arabic: "اللّهُمَّ حَصِّنِي مِنَ النَّظَرِ", roman: "Allahumma hassini mina an-nazari", urdu: "Ai Allah! Mujhe nazar lagne se bachaa." },
-    { name: "Dua For A Blessed Life", arabic: "اللّهُمَّ بَارِكْ فِي حَيَاتِي", roman: "Allahumma barik fi hayati", urdu: "Ai Allah! Mere zindagi ko barkat de." },
-    { name: "Dua For Good Deeds", arabic: "اللّهُمَّ اجْعَلْنِي مِنَ الصَّالِحِينَ", roman: "Allahumma aj’alni minas saliheen", urdu: "Ai Allah! Mujhe nek logon mein shamil kar." },
-    { name: "Dua For Joy and Success", arabic: "اللّهُمَّ اجْعَلْنَا فِي سَحَابَةٍ مِّنْ فَرَجٍ", roman: "Allahumma aj’alna fi sahabatin min farajin", urdu: "Ai Allah! Hume khushi aur kamyabi de." },
-    { name: "Dua For Blessings in Wealth", arabic: "اللّهُمَّ اجْعَلْ لِي رَزَقًا حَلالًا", roman: "Allahumma aj’al li rizqan halaalan", urdu: "Ai Allah! Mere rizq mein halal aur barkat daal." },
-    { name: "Dua For Protection from Poverty", arabic: "اللّهُمَّ قِنَا فَقْرًا", roman: "Allahumma qina faqran", urdu: "Ai Allah! Hume faqri se bachaa." }
-];
-
-let container = document.getElementById("duaContainer");
-
-duas.forEach(dua => {
-    container.innerHTML += `
-        <div class="dua-card">
-            <div class="dua-name">${dua.name}</div>
-            <div class="arabic">${dua.arabic}</div>
-            <div class="roman">${dua.roman}</div>
-            <div class="urdu">${dua.urdu}</div>
-        </div>
-        <hr>
-    `;
-});
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Islamic Dua Collection (141–160)</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f7f7f7;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        color: #2c3e50;
-    }
-    .dua-card {
-        background-color: white;
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dua-name {
-        font-size: 20px;
-        color: #2980b9;
-        font-weight: bold;
-    }
-    .arabic {
-        font-size: 22px;
-        direction: rtl;
-        text-align: right;
-        margin-top: 10px;
-    }
-    .roman {
-        color: #34495e;
-        margin-top: 5px;
-    }
-    .urdu {
-        color: #27ae60;
-        margin-top: 5px;
-    }
-    hr {
-        border: 0;
-        border-top: 1px solid #e0e0e0;
-        margin: 20px 0;
-    }
-</style>
-</head>
-<body>
-
-<h1>Islamic Dua Collection (141–160)</h1>
-
-<div id="duaContainer"></div>
-
-<script>
-let duas = [
-    { name: "Dua For Happiness", arabic: "اللّهُمَّ اجْعَلْنِي سَعِيدًا", roman: "Allahumma aj’ilni sa'eedan", urdu: "Ai Allah! Mujhe khushi de." },
-    { name: "Dua For Good Life", arabic: "اللّهُمَّ اجْعَلْنِي فِي سَعَادَةٍ", roman: "Allahumma aj’alni fi sa'adatin", urdu: "Ai Allah! Mujhe khushhal zindagi de." },
-    { name: "Dua For Prosperity", arabic: "اللّهُمَّ رَزُقْنَا فِي رَحْمَتِكَ", roman: "Allahumma razuqna fi rahmatik", urdu: "Ai Allah! Hume apni rahmat se rizq de." },
-    { name: "Dua For Relief from Stress", arabic: "اللّهُمَّ قِنَا شَرَّ النَّفْسِ", roman: "Allahumma qina sharra an-nafsi", urdu: "Ai Allah! Hume apni panah de." },
-    { name: "Dua For Good Character", arabic: "اللّهُمَّ اجْعَلْنِي فِي صَحَابَةٍ", roman: "Allahumma aj’alni fi sahaabatin", urdu: "Ai Allah! Mere achhe achhe saathi bana." },
-    { name: "Dua For Knowledge", arabic: "رَبِّ زِدْنِي عِلْمًا", roman: "Rabbi zidni ilma", urdu: "Ai Rab! Mere ilm mein izafa farma." },
-    { name: "Dua For Strength", arabic: "اللّهُمَّ قَوِّنِي", roman: "Allahumma qawwini", urdu: "Ai Allah! Mujhe mazbooti de." },
-    { name: "Dua For Peace of Mind", arabic: "اللّهُمَّ سَكِّنْ قَلْبِي", roman: "Allahumma sakkin qalbi", urdu: "Ai Allah! Mere dil ko sukoon de." },
-    { name: "Dua For Freedom from Worries", arabic: "اللّهُمَّ اجْعَلْنِي فِي سَلاَمٍ", roman: "Allahumma aj’alni fi salaamin", urdu: "Ai Allah! Mujhe apne aman mein rakh." },
-    { name: "Dua For Healing", arabic: "اللّهُمَّ اشْفِ مَرْضَانَا", roman: "Allahumma ishfi mardana", urdu: "Ai Allah! Hamare mareezon ko shifa de." },
-    { name: "Dua For Protection", arabic: "اللّهُمَّ قِنَا شَرَّ النَّارِ", roman: "Allahumma qina sharra an-naar", urdu: "Ai Allah! Hume aag ke azab se bachaa." },
-    { name: "Dua For Safe Journey", arabic: "اللّهُمَّ سَفَرًا مَرْحَبًا", roman: "Allahumma safaran marhaban", urdu: "Ai Allah! Mere safar ko asaan aur safar se bharpur kar de." },
-    { name: "Dua For A Blessed Marriage", arabic: "اللّهُمَّ اجْعَلْ زَوَاجِي رَحْمَةً", roman: "Allahumma aj’al zawaji rahmatan", urdu: "Ai Allah! Mere shaadi ko apni rahmat se bhar de." },
-    { name: "Dua For A Clean Heart", arabic: "اللّهُمَّ طَهِّرْ قَلْبِي", roman: "Allahumma tahhir qalbi", urdu: "Ai Allah! Mere dil ko paak kar de." },
-    { name: "Dua For Success in Work", arabic: "اللّهُمَّ اجْعَلْ لِي فِي عَمَلِي بَرَكَةً", roman: "Allahumma aj’al li fi amali barakatan", urdu: "Ai Allah! Mere kaam mein barkat de." },
-    { name: "Dua For Forgiveness", arabic: "رَبِّ اغْفِرْ لِي", roman: "Rabbi ghfir li", urdu: "Ai mere Rab! Mujhe bakhsh de." }
-];
-
-let container = document.getElementById("duaContainer");
-
-duas.forEach(dua => {
-    container.innerHTML += `
-        <div class="dua-card">
-            <div class="dua-name">${dua.name}</div>
-            <div class="arabic">${dua.arabic}</div>
-            <div class="roman">${dua.roman}</div>
-            <div class="urdu">${dua.urdu}</div>
-        </div>
-        <hr>
-    `;
-});
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Islamic Dua Collection (161–180)</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f7f7f7;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        color: #2c3e50;
-    }
-    .dua-card {
-        background-color: white;
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dua-name {
-        font-size: 20px;
-        color: #2980b9;
-        font-weight: bold;
-    }
-    .arabic {
-        font-size: 22px;
-        direction: rtl;
-        text-align: right;
-        margin-top: 10px;
-    }
-    .roman {
-        color: #34495e;
-        margin-top: 5px;
-    }
-    .urdu {
-        color: #27ae60;
-        margin-top: 5px;
-    }
-    hr {
-        border: 0;
-        border-top: 1px solid #e0e0e0;
-        margin: 20px 0;
-    }
-</style>
-</head>
-<body>
-
-<h1>Islamic Dua Collection (161–180)</h1>
-
-<div id="duaContainer"></div>
-
-<script>
-let duas = [
-    { name: "Dua For Healing", arabic: "اللّهُمَّ اشْفِهِمْ شِفَاءً لَا يُغَادِرُ سَقَمًا", roman: "Allahumma ishfihim shifaa'an la yughadiru saqaman", urdu: "Ai Allah! Unhe aise shifa de jo kisi bimari ko na chhode." },
-    { name: "Dua For Strength", arabic: "اللّهُمَّ قَوِّنِي", roman: "Allahumma qawwini", urdu: "Ai Allah! Mujhe mazbooti de." },
-    { name: "Dua For Guidance", arabic: "اللّهُمَّ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ", roman: "Allahumma ihdina as-siratal mustaqeem", urdu: "Ai Allah! Hume seedha rasta dikhla." },
-    { name: "Dua For Protection from Harm", arabic: "اللّهُمَّ قِنَا شَرَّ النَّاسِ", roman: "Allahumma qina sharra an-naas", urdu: "Ai Allah! Hume logon ke burayee se bachaa." },
-    { name: "Dua For Wealth", arabic: "اللّهُمَّ رَزُقْنَا فِي رَحْمَتِكَ", roman: "Allahumma razuqna fi rahmatik", urdu: "Ai Allah! Hume apni rahmat se maal-o-daulat de." },
-    { name: "Dua For Success", arabic: "اللّهُمَّ اجْعَلْ لِي فِي عَمَلِي بَرَكَةً", roman: "Allahumma aj’al li fi amali barakatan", urdu: "Ai Allah! Mere kaam mein barkat de." },
-    { name: "Dua For Peace", arabic: "اللّهُمَّ اجْعَلْ قَلْبِي سَابِرًا", roman: "Allahumma aj’al qalbi sabiran", urdu: "Ai Allah! Mere dil ko sukoon de." },
-    { name: "Dua For Forgiveness", arabic: "رَبِّ اغْفِرْ لِي", roman: "Rabbi ghfir li", urdu: "Ai mere Rab! Mujhe bakhsh de." },
-    { name: "Dua For Protection", arabic: "اللّهُمَّ قِنَا عَذَابَ النَّارِ", roman: "Allahumma qina azaba an-nar", urdu: "Ai Allah! Hume aag ke azab se bachaa." },
-    { name: "Dua For A Blessed Life", arabic: "اللّهُمَّ بَارِكْ فِي حَيَاتِي", roman: "Allahumma barik fi hayati", urdu: "Ai Allah! Mere zindagi ko barkat de." },
-    { name: "Dua For Good Health", arabic: "اللّهُمَّ اجْعَلْ جَسَدِي سَحِيحًا", roman: "Allahumma aj’al jasadi saheehan", urdu: "Ai Allah! Mere jism ko sehatmand bana." },
-    { name: "Dua For Family", arabic: "اللّهُمَّ اجْعَلْ أُسَرَنَا مُتَّحِدَةً", roman: "Allahumma aj’al usarana muttahidatan", urdu: "Ai Allah! Mere khandan ko ekjut kar." },
-    { name: "Dua For Good Character", arabic: "اللّهُمَّ اجْعَلْنِي فِي الصِّدْقِ", roman: "Allahumma aj’alni fi as-sidqi", urdu: "Ai Allah! Mujhe saccha bana." },
-    { name: "Dua For Success in Work", arabic: "اللّهُمَّ اجْعَلْ عَمَلِي مُوَفَّقًا", roman: "Allahumma aj’al amali muvaffaqan", urdu: "Ai Allah! Mere kaam ko kamyabi de." }
-];
-
-let container = document.getElementById("duaContainer");
-
-duas.forEach(dua => {
-    container.innerHTML += `
-        <div class="dua-card">
-            <div class="dua-name">${dua.name}</div>
-            <div class="arabic">${dua.arabic}</div>
-            <div class="roman">${dua.roman}</div>
-            <div class="urdu">${dua.urdu}</div>
-        </div>
-        <hr>
-    `;
-});
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Islamic Dua Collection (181–200)</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f7f7f7;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        color: #2c3e50;
-    }
-    .dua-card {
-        background-color: white;
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dua-name {
-        font-size: 20px;
-        color: #2980b9;
-        font-weight: bold;
-    }
-    .arabic {
-        font-size: 22px;
-        direction: rtl;
-        text-align: right;
-        margin-top: 10px;
-    }
-    .roman {
-        color: #34495e;
-        margin-top: 5px;
-    }
-    .urdu {
-        color: #27ae60;
-        margin-top: 5px;
-    }
-    hr {
-        border: 0;
-        border-top: 1px solid #e0e0e0;
-        margin: 20px 0;
-    }
-</style>
-</head>
-<body>
-
-<h1>Islamic Dua Collection (181–200)</h1>
-
-<div id="duaContainer"></div>
-
-<script>
-let duas = [
-    { name: "Dua For Prosperity", arabic: "اللّهُمَّ رَزُقْنَا فِي رَحْمَتِكَ", roman: "Allahumma razuqna fi rahmatik", urdu: "Ai Allah! Hume apni rahmat se rizq de." },
-    { name: "Dua For Success", arabic: "اللّهُمَّ اجْعَلْ لِي فِي عَمَلِي بَرَكَةً", roman: "Allahumma aj’al li fi amali barakatan", urdu: "Ai Allah! Mere kaam mein barkat de." },
-    { name: "Dua For Peace", arabic: "اللّهُمَّ اجْعَلْ قَلْبِي سَابِرًا", roman: "Allahumma aj’al qalbi sabiran", urdu: "Ai Allah! Mere dil ko sukoon de." },
-    { name: "Dua For Forgiveness", arabic: "رَبِّ اغْفِرْ لِي", roman: "Rabbi ghfir li", urdu: "Ai mere Rab! Mujhe bakhsh de." },
-    { name: "Dua For Protection", arabic: "اللّهُمَّ قِنَا عَذَابَ النَّارِ", roman: "Allahumma qina azaba an-nar", urdu: "Ai Allah! Hume aag ke azab se bachaa." },
-    { name: "Dua For A Blessed Life", arabic: "اللّهُمَّ بَارِكْ فِي حَيَاتِي", roman: "Allahumma barik fi hayati", urdu: "Ai Allah! Mere zindagi ko barkat de." },
-    { name: "Dua For Good Health", arabic: "اللّهُمَّ اجْعَلْ جَسَدِي سَحِيحًا", roman: "Allahumma aj’al jasadi saheehan", urdu: "Ai Allah! Mere jism ko sehatmand bana." },
-    { name: "Dua For Family", arabic: "اللّهُمَّ اجْعَلْ أُسَرَنَا مُتَّحِدَةً", roman: "Allahumma aj’al usarana muttahidatan", urdu: "Ai Allah! Mere khandan ko ekjut kar." },
-    { name: "Dua For Good Character", arabic: "اللّهُمَّ اجْعَلْنِي فِي الصِّدْقِ", roman: "Allahumma aj’alni fi as-sidqi", urdu: "Ai Allah! Mujhe saccha bana." },
-    { name: "Dua For Success in Work", arabic: "اللّهُمَّ اجْعَلْ عَمَلِي مُوَفَّقًا", roman: "Allahumma aj’al amali muvaffaqan", urdu: "Ai Allah! Mere kaam ko kamyabi de." },
-    { name: "Dua For Wealth", arabic: "اللّهُمَّ رَزُقْنَا فِي رَحْمَتِكَ", roman: "Allahumma razuqna fi rahmatik", urdu: "Ai Allah! Hume apni rahmat se maal-o-daulat de." },
-    { name: "Dua For Success in Marriage", arabic: "اللّهُمَّ اجْعَلْ زَوَاجِي رَحْمَةً", roman: "Allahumma aj’al zawaji rahmatan", urdu: "Ai Allah! Mere shaadi ko apni rahmat se bhar de." },
-    { name: "Dua For Guidance", arabic: "اللّهُمَّ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ", roman: "Allahumma ihdina as-siratal mustaqeem", urdu: "Ai Allah! Hume seedha rasta dikhla." },
-    { name: "Dua For Protection from Harm", arabic: "اللّهُمَّ قِنَا شَرَّ النَّاسِ", roman: "Allahumma qina sharra an-naas", urdu: "Ai Allah! Hume logon ke burayee se bachaa." },
-    { name: "Dua For Happiness", arabic: "اللّهُمَّ اجْعَلْنِي سَعِيدًا", roman: "Allahumma aj’ilni sa’eedan", urdu: "Ai Allah! Mujhe khushi de." }
-];
-
-let container = document.getElementById("duaContainer");
-
-duas.forEach(dua => {
-    container.innerHTML += `
-        <div class="dua-card">
-            <div class="dua-name">${dua.name}</div>
-            <div class="arabic">${dua.arabic}</div>
-            <div class="roman">${dua.roman}</div>
-            <div class="urdu">${dua.urdu}</div>
-        </div>
-        <hr>
-    `;
-});
-</script>
-
-</body>
-</html>
